@@ -1,0 +1,255 @@
+{
+  "consistency_summary": {
+    "sheet3_shape": [
+      74,
+      26
+    ],
+    "sheet4_shape": [
+      25,
+      76
+    ],
+    "sheet5_shape": [
+      23,
+      6
+    ],
+    "missing_values_sheet3": 0,
+    "row_sum_matches_total": "74/74",
+    "attribute_sum_matches_sheet5": "23/23",
+    "class_distribution": {
+      "Low Stress (0)": 48,
+      "High Stress (1)": 26
+    }
+  },
+  "best_model_name": "Ridge Logistic Regression",
+  "augmented_sample_size": 110,
+  "pearson_selected_features_count": 15,
+  "pearson_15_features": [
+    "teaching_experience",
+    "academic_rank",
+    "age",
+    "research_responsibilities",
+    "teaching_workload",
+    "genai_tool_frequency",
+    "genai_admin_use",
+    "health_problems_affect_coping",
+    "feedback_frequency",
+    "educational_qualification",
+    "genai_research_teaching_usefulness",
+    "exam_supervision_marking",
+    "alcohol_frequency",
+    "feedback_preference",
+    "break_frequency"
+  ],
+  "cv5_summary": {
+    "Elastic Net Logistic Regression": {
+      "mean_accuracy": 0.9636,
+      "std_accuracy": 0.053,
+      "mean_precision": 0.96,
+      "std_precision": 0.08,
+      "mean_recall": 0.9528,
+      "std_recall": 0.058,
+      "mean_f1": 0.9551,
+      "std_f1": 0.0621,
+      "mean_roc_auc": 0.9948,
+      "std_roc_auc": 0.0069,
+      "oof_accuracy": 0.9636,
+      "oof_precision": 0.9524,
+      "oof_recall": 0.9524,
+      "oof_f1": 0.9524,
+      "oof_roc_auc": 0.9979,
+      "f1_ci_95": [
+        0.8944,
+        0.9884
+      ],
+      "confusion_matrix": [
+        [
+          66,
+          2
+        ],
+        [
+          2,
+          40
+        ]
+      ],
+      "tp": 40,
+      "tn": 66,
+      "fp": 2,
+      "fn": 2
+    },
+    "Ridge Logistic Regression": {
+      "mean_accuracy": 0.9727,
+      "std_accuracy": 0.0364,
+      "mean_precision": 0.9778,
+      "std_precision": 0.0444,
+      "mean_recall": 0.9528,
+      "std_recall": 0.058,
+      "mean_f1": 0.9644,
+      "std_f1": 0.0458,
+      "mean_roc_auc": 0.9966,
+      "std_roc_auc": 0.0068,
+      "oof_accuracy": 0.9727,
+      "oof_precision": 0.9756,
+      "oof_recall": 0.9524,
+      "oof_f1": 0.9639,
+      "oof_roc_auc": 0.9986,
+      "f1_ci_95": [
+        0.9124,
+        1.0
+      ],
+      "confusion_matrix": [
+        [
+          67,
+          1
+        ],
+        [
+          2,
+          40
+        ]
+      ],
+      "tp": 40,
+      "tn": 67,
+      "fp": 1,
+      "fn": 2
+    },
+    "Shallow Decision Tree": {
+      "mean_accuracy": 0.8182,
+      "std_accuracy": 0.0498,
+      "mean_precision": 0.75,
+      "std_precision": 0.043,
+      "mean_recall": 0.7889,
+      "std_recall": 0.0793,
+      "mean_f1": 0.7683,
+      "std_f1": 0.0581,
+      "mean_roc_auc": 0.8334,
+      "std_roc_auc": 0.0734,
+      "oof_accuracy": 0.8182,
+      "oof_precision": 0.75,
+      "oof_recall": 0.7857,
+      "oof_f1": 0.7674,
+      "oof_roc_auc": 0.8314,
+      "f1_ci_95": [
+        0.6667,
+        0.8603
+      ],
+      "confusion_matrix": [
+        [
+          57,
+          11
+        ],
+        [
+          9,
+          33
+        ]
+      ],
+      "tp": 33,
+      "tn": 57,
+      "fp": 11,
+      "fn": 9
+    },
+    "Random Forest": {
+      "mean_accuracy": 0.9273,
+      "std_accuracy": 0.0617,
+      "mean_precision": 0.9306,
+      "std_precision": 0.0904,
+      "mean_recall": 0.8833,
+      "std_recall": 0.0706,
+      "mean_f1": 0.9055,
+      "std_f1": 0.0751,
+      "mean_roc_auc": 0.9878,
+      "std_roc_auc": 0.0151,
+      "oof_accuracy": 0.9273,
+      "oof_precision": 0.925,
+      "oof_recall": 0.881,
+      "oof_f1": 0.9024,
+      "oof_roc_auc": 0.9856,
+      "f1_ci_95": [
+        0.8241,
+        0.9613
+      ],
+      "confusion_matrix": [
+        [
+          65,
+          3
+        ],
+        [
+          5,
+          37
+        ]
+      ],
+      "tp": 37,
+      "tn": 65,
+      "fp": 3,
+      "fn": 5
+    }
+  },
+  "holdout_summary": {
+    "Elastic Net Logistic Regression": {
+      "accuracy": 0.9545,
+      "precision": 1.0,
+      "recall": 0.875,
+      "f1": 0.9333,
+      "roc_auc": 1.0,
+      "confusion_matrix": [
+        [
+          14,
+          0
+        ],
+        [
+          1,
+          7
+        ]
+      ]
+    },
+    "Ridge Logistic Regression": {
+      "accuracy": 0.9545,
+      "precision": 1.0,
+      "recall": 0.875,
+      "f1": 0.9333,
+      "roc_auc": 1.0,
+      "confusion_matrix": [
+        [
+          14,
+          0
+        ],
+        [
+          1,
+          7
+        ]
+      ]
+    },
+    "Shallow Decision Tree": {
+      "accuracy": 0.9091,
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1": 0.8889,
+      "roc_auc": 0.9241,
+      "confusion_matrix": [
+        [
+          12,
+          2
+        ],
+        [
+          0,
+          8
+        ]
+      ]
+    },
+    "Random Forest": {
+      "accuracy": 0.8636,
+      "precision": 0.7778,
+      "recall": 0.875,
+      "f1": 0.8235,
+      "roc_auc": 0.9643,
+      "confusion_matrix": [
+        [
+          12,
+          2
+        ],
+        [
+          1,
+          7
+        ]
+      ]
+    }
+  }
+}

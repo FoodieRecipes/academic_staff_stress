@@ -1,0 +1,5 @@
+Model,Role,5-Fold CV Accuracy,5-Fold CV Precision,5-Fold CV Recall,5-Fold CV F1-Score,5-Fold CV ROC-AUC,95% CI F1-Score,OOF Misclassifications,Holdout Test Accuracy,Holdout Test F1-Score,Holdout Test ROC-AUC,cv5_accuracy_num,cv5_precision_num,cv5_recall_num,cv5_f1_num,cv5_auc_num
+Elastic Net Logistic Regression,Candidate Classifier,96.36% (±5.30%),96.00% (±8.00%),95.28% (±5.80%),95.51% (±6.21%),99.48% (±0.69%),"[89.4%, 98.8%]",4 / 110,95.45%,93.33%,100.00%,0.9636,0.96,0.9528,0.9551,0.9948
+Ridge Logistic Regression,Selected Optimal Classifier (m*),97.27% (±3.64%),97.78% (±4.44%),95.28% (±5.80%),96.44% (±4.58%),99.66% (±0.68%),"[91.2%, 100.0%]",3 / 110,95.45%,93.33%,100.00%,0.9727,0.9778,0.9528,0.9644,0.9966
+Shallow Decision Tree,Candidate Classifier,81.82% (±4.98%),75.00% (±4.30%),78.89% (±7.93%),76.83% (±5.81%),83.34% (±7.34%),"[66.7%, 86.0%]",20 / 110,90.91%,88.89%,92.41%,0.8182,0.75,0.7889,0.7683,0.8334
+Random Forest,Candidate Classifier,92.73% (±6.17%),93.06% (±9.04%),88.33% (±7.06%),90.55% (±7.51%),98.78% (±1.51%),"[82.4%, 96.1%]",8 / 110,86.36%,82.35%,96.43%,0.9273,0.9306,0.8833,0.9055,0.9878

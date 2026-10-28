@@ -1,0 +1,24 @@
+feature_key,feature_label,domain,mean_abs_shap
+teaching_experience,Years of Teaching Experience,Socio-Demographic & Academic Profile,0.1258
+exam_supervision_marking,Exam Supervision & Script Marking,Occupational & Institutional Stressors,0.107
+feedback_frequency,Preferred Feedback Schedule,Technological & Gen-AI Adoption Factors,0.088
+genai_admin_use,Gen-AI Usage for Administrative Tasks,Technological & Gen-AI Adoption Factors,0.0732
+genai_tool_frequency,Gen-AI Tool Usage Frequency,Technological & Gen-AI Adoption Factors,0.0688
+research_responsibilities,Research & Publication Pressure,Occupational & Institutional Stressors,0.068
+teaching_workload,Heavy Teaching Workload,Occupational & Institutional Stressors,0.0654
+academic_rank,Academic Rank / Cadre,Socio-Demographic & Academic Profile,0.0534
+health_problems_affect_coping,Health Problems Affecting Job Coping,"Behavioural, Lifestyle & Physiological Indicators",0.0483
+genai_research_teaching_usefulness,Perceived Usefulness of Gen-AI (Teaching/Research),Technological & Gen-AI Adoption Factors,0.0388
+educational_qualification,Educational Qualification,Socio-Demographic & Academic Profile,0.0328
+administrative_responsibilities,Administrative Responsibilities,Occupational & Institutional Stressors,0.0288
+alcohol_frequency,Alcohol Consumption Frequency,"Behavioural, Lifestyle & Physiological Indicators",0.0268
+feedback_preference,Preference for Personalized Stress Feedback,Technological & Gen-AI Adoption Factors,0.0267
+break_frequency,Workday Break Frequency,"Behavioural, Lifestyle & Physiological Indicators",0.0196
+age,Age Group,Socio-Demographic & Academic Profile,0.0166
+genai_system_trust,Trust in Gen-AI Stress Feedback System,Technological & Gen-AI Adoption Factors,0.0048
+teaching_hours,Weekly Teaching Hours,Occupational & Institutional Stressors,0.0038
+gender,Gender,Socio-Demographic & Academic Profile,0.0024
+smoking,Smoking Habit,"Behavioural, Lifestyle & Physiological Indicators",0.0014
+physical_exercise_frequency,Physical Exercise Frequency,"Behavioural, Lifestyle & Physiological Indicators",0.0007
+alcohol_consumption,Alcohol Consumption,"Behavioural, Lifestyle & Physiological Indicators",0.0004
+physical_exercise,Engagement in Physical Exercise,"Behavioural, Lifestyle & Physiological Indicators",0.0

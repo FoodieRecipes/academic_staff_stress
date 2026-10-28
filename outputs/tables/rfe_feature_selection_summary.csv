@@ -1,0 +1,24 @@
+feature_key,feature_label,domain,SVM (Benchmark) Rank,SVM (Benchmark) Selected,Decision Tree Rank,Decision Tree Selected,Random Forest Rank,Random Forest Selected,XGBoost Rank,XGBoost Selected,Consensus Selection Count (out of 4)
+teaching_experience,Years of Teaching Experience,Socio-Demographic & Academic Profile,1,True,1,True,1,True,1,True,4
+research_responsibilities,Research & Publication Pressure,Occupational & Institutional Stressors,1,True,1,True,1,True,1,True,4
+exam_supervision_marking,Exam Supervision & Script Marking,Occupational & Institutional Stressors,1,True,1,True,1,True,1,True,4
+genai_tool_frequency,Gen-AI Tool Usage Frequency,Technological & Gen-AI Adoption Factors,1,True,1,True,1,True,1,True,4
+genai_admin_use,Gen-AI Usage for Administrative Tasks,Technological & Gen-AI Adoption Factors,1,True,1,True,1,True,1,True,4
+break_frequency,Workday Break Frequency,"Behavioural, Lifestyle & Physiological Indicators",1,True,1,True,1,True,1,True,4
+feedback_preference,Preference for Personalized Stress Feedback,Technological & Gen-AI Adoption Factors,1,True,1,True,1,True,1,True,4
+feedback_frequency,Preferred Feedback Schedule,Technological & Gen-AI Adoption Factors,1,True,1,True,1,True,1,True,4
+age,Age Group,Socio-Demographic & Academic Profile,1,True,9,False,1,True,1,True,3
+educational_qualification,Educational Qualification,Socio-Demographic & Academic Profile,1,True,7,False,1,True,1,True,3
+academic_rank,Academic Rank / Cadre,Socio-Demographic & Academic Profile,1,True,6,False,1,True,1,True,3
+teaching_workload,Heavy Teaching Workload,Occupational & Institutional Stressors,3,False,1,True,1,True,1,True,3
+alcohol_frequency,Alcohol Consumption Frequency,"Behavioural, Lifestyle & Physiological Indicators",1,True,1,True,3,False,1,True,3
+administrative_responsibilities,Administrative Responsibilities,Occupational & Institutional Stressors,6,False,5,False,1,True,1,True,2
+genai_research_teaching_usefulness,Perceived Usefulness of Gen-AI (Teaching/Research),Technological & Gen-AI Adoption Factors,4,False,3,False,1,True,1,True,2
+health_problems_affect_coping,Health Problems Affecting Job Coping,"Behavioural, Lifestyle & Physiological Indicators",2,False,1,True,1,True,2,False,2
+genai_system_trust,Trust in Gen-AI Stress Feedback System,Technological & Gen-AI Adoption Factors,1,True,1,True,2,False,5,False,2
+physical_exercise,Engagement in Physical Exercise,"Behavioural, Lifestyle & Physiological Indicators",1,True,1,True,9,False,8,False,2
+smoking,Smoking Habit,"Behavioural, Lifestyle & Physiological Indicators",1,True,2,False,6,False,3,False,1
+physical_exercise_frequency,Physical Exercise Frequency,"Behavioural, Lifestyle & Physiological Indicators",5,False,1,True,4,False,6,False,1
+alcohol_consumption,Alcohol Consumption,"Behavioural, Lifestyle & Physiological Indicators",8,False,1,True,7,False,7,False,1
+teaching_hours,Weekly Teaching Hours,Occupational & Institutional Stressors,9,False,4,False,5,False,4,False,0
+gender,Gender,Socio-Demographic & Academic Profile,7,False,8,False,8,False,9,False,0
