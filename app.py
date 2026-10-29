@@ -35,7 +35,7 @@ from stress_system_core import (
 )
 
 st.set_page_config(
-    page_title="AKSU Academic Staff Stress Assessment & Gen-AI System",
+    page_title="AKSU Academic Staff Stress Assessment & Generative AI System",
     page_icon="🎓",
     layout="wide",
 )
@@ -96,7 +96,7 @@ def main():
     active_pipeline = trained_models.get(model_choice, selected_model)
 
     st.sidebar.divider()
-    st.sidebar.markdown("### 🏆 Optimal Classifier Performance")
+    st.sidebar.markdown("### 🏆 Optimal Classifier (Ridge)")
     if best_model_name in cv5_results:
         cv_best = cv5_results[best_model_name]
         st.sidebar.success(
@@ -123,21 +123,20 @@ def main():
         "**Case Study:** Academic Staff of Akwa Ibom State University, Ikot Akpaden, Nigeria  \n"
         "*Integrating Pearson Correlation Feature Selection (15 Indicators), Supervised Classifiers "
         "(`Elastic Net`, `Ridge Logistic Regression`, `Shallow Decision Tree`, `Random Forest` under Stratified 5-Fold CV on $N=110$ Augmented Dataset), "
-        "Explainable AI (Factor Attributions $\\phi_j$), and Retrieval-Augmented Generative AI (`Gemini 3.8 Flash`).*"
+        "and Retrieval-Augmented Generative AI (`Gemini 3.8 Flash`) for Personalized Wellbeing Feedback.*"
     )
 
-    tab1, tab2, tab3, tab4 = st.tabs([
-        "🩺 1. Stress Assessment & Gen-AI Personalized Feedback",
+    tab1, tab2, tab3 = st.tabs([
+        "🩺 1. Stress Assessment & Generative AI Personalized Feedback",
         "📊 2. Dataset Explorer (Original N=74 & Augmented N=110)",
-        "⚙️ 3. Pearson Feature Selection & 5-Fold CV Comparison",
-        "🔍 4. Explainable AI & System Architecture",
+        "⚙️ 3. Pearson Feature Selection & Model Evaluation",
     ])
 
     # =======================================================================
-    # TAB 1: INDIVIDUAL STRESS ASSESSMENT & PERSONALIZED FEEDBACK
+    # TAB 1: INDIVIDUAL STRESS ASSESSMENT & GENERATIVE AI FEEDBACK
     # =======================================================================
     with tab1:
-        st.subheader("Stress Assessment Module & Personalized Feedback Generation Module")
+        st.subheader("Stress Assessment Module & Generative AI Personalized Feedback Engine")
         mode = st.radio(
             "Select Assessment Input Mode:",
             [
@@ -201,7 +200,7 @@ def main():
             custom_vals["stress_class"] = 1 if custom_vals["total_score"] >= 28 else 0
             staff_row = pd.Series(custom_vals)
 
-        # Run Assessment & Explainable AI
+        # Run Assessment via the selected model
         explanation = explain_individual_staff(staff_row, active_pipeline, df_aug, features=PEARSON_15_FEATURES)
 
         m1, m2, m3, m4 = st.columns(4)
@@ -215,32 +214,16 @@ def main():
         m3.metric("Composite Score (`TOTAL`)", f"{int(staff_row['total_score'])}")
         m4.metric("Active Model", model_choice)
 
-        st.markdown("#### 🔍 Explainable AI Feature Attribution Breakdown")
-        s_col1, s_col2 = st.columns([1.3, 1])
+        st.divider()
 
-        with s_col1:
-            top_c = pd.DataFrame(explanation["all_contributions"][:10]).sort_values("shap_value", ascending=True)
-            fig, ax = plt.subplots(figsize=(8, 4.8))
-            labels_with_val = [f"{r['feature_label']} [{r['decoded_response']}]" for _, r in top_c.iterrows()]
-            bar_colors = ["#d7191c" if v > 0 else "#2b83ba" for v in top_c["shap_value"]]
-            ax.barh(labels_with_val, top_c["shap_value"], color=bar_colors, edgecolor="black")
-            ax.axvline(0, color="black", linewidth=1.1)
-            ax.set_xlabel("Attribution Weight phi_j (+ pushes toward High Stress, - buffers toward Low Stress)")
-            ax.set_title(f"Individual Factor Contributions for `{explanation['staff_code']}`", fontweight="bold")
-            plt.tight_layout()
-            st.pyplot(fig)
-            plt.close(fig)
+        # Generative AI Feedback Section (Direct from Classification)
+        st.markdown("### 🤖 Generative AI Personalized Feedback System")
+        st.caption(
+            f"The Generative AI Personalized Feedback Engine directly takes the stress classification result "
+            f"(**{explanation['predicted_label']}** via `{model_choice}`) and individual questionnaire responses, "
+            f"generating tailored, empathetic, and evidence-grounded recommendations for Akwa Ibom State University."
+        )
 
-        with s_col2:
-            st.markdown("**Top Stress Drivers (+Risk):**")
-            for d in explanation["stress_drivers"][:4]:
-                st.markdown(f"- **{d['feature_label']}**: `{d['decoded_response']}` (`+{d['shap_value']:.4f}`)")
-            st.markdown("**Top Protective Factors (-Risk):**")
-            for b in explanation["protective_buffers"][:3]:
-                st.markdown(f"- **{b['feature_label']}**: `{b['decoded_response']}` (`{b['shap_value']:.4f}`)")
-
-        # Generative AI Feedback Section
-        st.markdown("#### 💬 Personalized Feedback Generation Module (Generative AI + RAG)")
         fb_result = generate_personalized_feedback(
             staff_row=staff_row,
             explanation=explanation,
@@ -248,10 +231,10 @@ def main():
             api_key=api_key_input.strip() or None,
             use_live_gemini=use_live,
         )
-        st.caption(f"**Generation Engine:** `{fb_result['generation_mode']}`")
+        st.info(f"**Generation Engine:** `{fb_result['generation_mode']}`")
         st.markdown(fb_result["feedback_text"])
 
-        with st.expander("📚 View Retrieved RAG Literature Citations Used to Ground This Report"):
+        with st.expander("📚 View Retrieved RAG Evidence Citations & Contributing Indicators"):
             st.dataframe(pd.DataFrame(fb_result["retrieved_evidence"]), use_container_width=True)
 
     # =======================================================================
@@ -289,7 +272,7 @@ def main():
                 st.image(str(FIGURES_DIR / "fig3_sheet4_transpose_heatmap.png"), caption="Figure 3: Respondent Profile Heatmap Ordered by Stress Class")
 
     # =======================================================================
-    # TAB 3: PEARSON FEATURE SELECTION & 5-FOLD CV COMPARISON
+    # TAB 3: PEARSON FEATURE SELECTION & MODEL EVALUATION
     # =======================================================================
     with tab3:
         st.subheader("Pearson Correlation Feature Selection & Stratified 5-Fold Cross-Validation")
@@ -319,17 +302,13 @@ def main():
             if (FIGURES_DIR / "fig8_roc_curves.png").exists():
                 st.image(str(FIGURES_DIR / "fig8_roc_curves.png"), caption="Figure 8: Receiver Operating Characteristic (ROC) Curves")
 
-    # =======================================================================
-    # TAB 4: EXPLAINABLE AI & ARCHITECTURE
-    # =======================================================================
-    with tab4:
-        st.subheader("Global Explainable AI & System Architecture")
-        if (FIGURES_DIR / "fig9_feature_importance.png").exists():
-            st.image(str(FIGURES_DIR / "fig9_feature_importance.png"), caption="Figure 9: Global Standardized Weights (Ridge Logistic Regression)")
-        if (FIGURES_DIR / "fig10_individual_examples.png").exists():
-            st.image(str(FIGURES_DIR / "fig10_individual_examples.png"), caption="Figure 10: Individual Feature Attributions: High Stress (A039) vs. Low Stress (A002)")
-        if (FIGURES_DIR / "fig4_correlation_matrix.png").exists():
-            st.image(str(FIGURES_DIR / "fig4_correlation_matrix.png"), caption="Figure 4: Pearson Correlation Matrix across the 15 High-Contribution Indicators")
+        f_col3, f_col4 = st.columns(2)
+        with f_col3:
+            if (FIGURES_DIR / "fig9_feature_importance.png").exists():
+                st.image(str(FIGURES_DIR / "fig9_feature_importance.png"), caption="Figure 9: Model Feature Coefficients & Weights (Ridge Logistic Regression)")
+        with f_col4:
+            if (FIGURES_DIR / "fig4_correlation_matrix.png").exists():
+                st.image(str(FIGURES_DIR / "fig4_correlation_matrix.png"), caption="Figure 4: Pearson Correlation Matrix across the 15 High-Contribution Indicators")
 
 
 if __name__ == "__main__":

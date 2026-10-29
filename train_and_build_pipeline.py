@@ -426,7 +426,7 @@ def run_complete_pipeline() -> dict:
             ax.text(w + offset, b.get_y() + b.get_height() / 2, f"{w:+.3f}", va="center", ha=ha, fontsize=8.5, fontweight="bold")
         ax.axvline(0, color="black", linewidth=1.2)
         ax.set_xlabel("Standardized Model Weight w_j (+ pushes to High Stress, - pushes to Low Stress)", fontweight="bold")
-        ax.set_title(f"Figure 9: Global Feature Attributions & Standardized Weights ({best_model_name})", fontsize=12.5, fontweight="bold")
+        ax.set_title(f"Figure 9: Model Feature Coefficients & Weights ({best_model_name})", fontsize=12.5, fontweight="bold")
     else:
         importances = clf_step.feature_importances_
         feat_imp_df = pd.DataFrame({
@@ -441,14 +441,14 @@ def run_complete_pipeline() -> dict:
             w = b.get_width()
             ax.text(w + 0.005, b.get_y() + b.get_height() / 2, f"{w:.3f}", va="center", fontsize=8.5)
         ax.set_xlabel("Gini Feature Importance", fontweight="bold")
-        ax.set_title(f"Figure 9: Global Feature Importance ({best_model_name})", fontsize=12.5, fontweight="bold")
+        ax.set_title(f"Figure 9: Model Feature Importance ({best_model_name})", fontsize=12.5, fontweight="bold")
 
     plt.tight_layout()
     plt.savefig(FIGURES_DIR / "fig9_feature_importance.png")
     plt.savefig(FIGURES_DIR / "fig9_shap_global_importance.png")
     plt.close(fig)
 
-    # Figure 10: Individual Explainable AI Staff Cases (A039 High Stress vs A002 Low Stress)
+    # Figure 10: Individual Staff Indicators Feeding Generative AI (A039 High Stress vs A002 Low Stress)
     high_staff_row = df_aug[df_aug["staff_code"] == "A039"].iloc[0]
     low_staff_row = df_aug[df_aug["staff_code"] == "A002"].iloc[0]
 
@@ -466,12 +466,12 @@ def run_complete_pipeline() -> dict:
         c_bars = ["#d7191c" if v > 0 else "#2b83ba" for v in top_c["shap_value"]]
         ax.barh(labels_with_val, top_c["shap_value"], color=c_bars, edgecolor="black")
         ax.axvline(0, color="black", linewidth=1.2)
-        ax.set_xlabel("Standardized Feature Contribution phi_j (+ pushes toward High Stress, - pushes toward Low Stress)", fontweight="bold")
+        ax.set_xlabel("Indicator Contribution Weight (+ pushes toward High Stress, - buffers toward Low Stress)", fontweight="bold")
         ax.set_title(
-            f"{title_prefix}\nAssessed Category: {exp_obj['predicted_label']} (High-Stress Probability: {exp_obj['probability_high_stress']*100:.1f}%)",
+            f"{title_prefix}\nClassification: {exp_obj['predicted_label']} (High-Stress Probability: {exp_obj['probability_high_stress']*100:.1f}%)",
             fontweight="bold",
         )
-    plt.suptitle("Figure 10: Instance-Level Explainable AI Feature Attributions: Individual Stress Drivers & Buffers", fontsize=13, fontweight="bold", y=1.02)
+    plt.suptitle("Figure 10: Individual Indicator Contributions Feeding the Generative AI Feedback System", fontsize=13, fontweight="bold", y=1.02)
     plt.tight_layout()
     plt.savefig(FIGURES_DIR / "fig10_individual_examples.png")
     plt.savefig(FIGURES_DIR / "fig10_shap_individual_examples.png")

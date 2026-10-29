@@ -9,7 +9,7 @@
 
 ## Case Study 1: High-Stress Academic Staff Member (`A039`)
 
-### Personalized Stress-Level Assessment & Feedback Report (`A039`)
+### Personalized Stress-Level Assessment & Generative AI Feedback Report (`A039`)
 
 **Academic Profile:** Associate Professor (Doctorate (PhD), 15 years and above teaching experience) — *Akwa Ibom State University (AKSU)*  
 **Assessed Stress Category (Ridge Logistic Regression):** **HIGH STRESS** (Estimated High-Stress Probability: **100.0%**)  
@@ -17,18 +17,18 @@
 
 ---
 
-#### 1. Explainable AI Feature Attribution Breakdown
-Your questionnaire responses indicate an **elevated occupational stress profile (High Stress)**. The model identified the specific Pearson-selected occupational, technological, and behavioural factors driving your stress level:
+#### 1. Stress Indicator Breakdown
+Your questionnaire responses indicate an **elevated occupational stress profile (High Stress)**. The model identified the specific Pearson-selected occupational, technological, and behavioural factors contributing to your stress level:
 
 **Primary Stress-Contributing Factors (Pushing Toward Higher Stress):**
-- **Research & Publication Pressure** (*Occupational & Institutional Stressors*): Your response (`Strongly Agree`) contributed an attribution weight of **`+1.5209`**.
-- **Age Group** (*Socio-Demographic & Academic Profile*): Your response (`55 yrs & above`) contributed an attribution weight of **`+1.1283`**.
-- **Gen-AI Tool Usage Frequency** (*Technological & Gen-AI Adoption Factors*): Your response (`Very often`) contributed an attribution weight of **`+1.0895`**.
-- **Alcohol Consumption Frequency** (*Behavioural, Lifestyle & Physiological Indicators*): Your response (`Often`) contributed an attribution weight of **`+1.0266`**.
+- **Research & Publication Pressure** (*Occupational & Institutional Stressors*): Your response (`Strongly Agree`) contributed a factor weight of **`+1.5209`**.
+- **Age Group** (*Socio-Demographic & Academic Profile*): Your response (`55 yrs & above`) contributed a factor weight of **`+1.1283`**.
+- **Gen-AI Tool Usage Frequency** (*Technological & Gen-AI Adoption Factors*): Your response (`Very often`) contributed a factor weight of **`+1.0895`**.
+- **Alcohol Consumption Frequency** (*Behavioural, Lifestyle & Physiological Indicators*): Your response (`Often`) contributed a factor weight of **`+1.0266`**.
 
 **Protective & Stabilizing Factors (Buffering Against Stress):**
-- **Exam Supervision & Script Marking** (*Occupational & Institutional Stressors*): Your response (`Sometimes`) acted as a protective buffer with an attribution weight of **`-0.8931`**.
-- **Preferred Feedback Schedule** (*Technological & Gen-AI Adoption Factors*): Your response (`Once a week`) acted as a protective buffer with an attribution weight of **`-0.0606`**.
+- **Exam Supervision & Script Marking** (*Occupational & Institutional Stressors*): Your response (`Sometimes`) acted as a protective buffer with a factor weight of **`-0.8931`**.
+- **Preferred Feedback Schedule** (*Technological & Gen-AI Adoption Factors*): Your response (`Once a week`) acted as a protective buffer with a factor weight of **`-0.0606`**.
 
 ---
 
@@ -54,7 +54,7 @@ Your questionnaire responses indicate an **elevated occupational stress profile 
 
 ## Case Study 2: Low-Stress Academic Staff Member (`A002`)
 
-### Personalized Stress-Level Assessment & Feedback Report (`A002`)
+### Personalized Stress-Level Assessment & Generative AI Feedback Report (`A002`)
 
 **Academic Profile:** Lecturer II (Master's Degree, 6–10 years teaching experience) — *Akwa Ibom State University (AKSU)*  
 **Assessed Stress Category (Ridge Logistic Regression):** **LOW STRESS** (Estimated High-Stress Probability: **16.9%**)  
@@ -62,19 +62,19 @@ Your questionnaire responses indicate an **elevated occupational stress profile 
 
 ---
 
-#### 1. Explainable AI Feature Attribution Breakdown
+#### 1. Stress Indicator Breakdown
 Your questionnaire responses indicate a **manageable occupational stress profile (Low Stress)**. The model identified both the protective factors maintaining your equilibrium and the mild pressure points to monitor so your stress remains low:
 
 **Primary Stress-Contributing Factors (Pushing Toward Higher Stress):**
-- **Gen-AI Usage for Administrative Tasks** (*Technological & Gen-AI Adoption Factors*): Your response (`Very often`) contributed an attribution weight of **`+1.4613`**.
-- **Alcohol Consumption Frequency** (*Behavioural, Lifestyle & Physiological Indicators*): Your response (`Often`) contributed an attribution weight of **`+1.0266`**.
-- **Preferred Feedback Schedule** (*Technological & Gen-AI Adoption Factors*): Your response (`Once a month`) contributed an attribution weight of **`+0.8914`**.
-- **Preference for Personalized Stress Feedback** (*Technological & Gen-AI Adoption Factors*): Your response (`Most preferred`) contributed an attribution weight of **`+0.8244`**.
+- **Gen-AI Usage for Administrative Tasks** (*Technological & Gen-AI Adoption Factors*): Your response (`Very often`) contributed a factor weight of **`+1.4613`**.
+- **Alcohol Consumption Frequency** (*Behavioural, Lifestyle & Physiological Indicators*): Your response (`Often`) contributed a factor weight of **`+1.0266`**.
+- **Preferred Feedback Schedule** (*Technological & Gen-AI Adoption Factors*): Your response (`Once a month`) contributed a factor weight of **`+0.8914`**.
+- **Preference for Personalized Stress Feedback** (*Technological & Gen-AI Adoption Factors*): Your response (`Most preferred`) contributed a factor weight of **`+0.8244`**.
 
 **Protective & Stabilizing Factors (Buffering Against Stress):**
-- **Research & Publication Pressure** (*Occupational & Institutional Stressors*): Your response (`Disagree`) acted as a protective buffer with an attribution weight of **`-1.2217`**.
-- **Age Group** (*Socio-Demographic & Academic Profile*): Your response (`25–34 yrs`) acted as a protective buffer with an attribution weight of **`-1.0880`**.
-- **Educational Qualification** (*Socio-Demographic & Academic Profile*): Your response (`Master's Degree`) acted as a protective buffer with an attribution weight of **`-1.0409`**.
+- **Research & Publication Pressure** (*Occupational & Institutional Stressors*): Your response (`Disagree`) acted as a protective buffer with a factor weight of **`-1.2217`**.
+- **Age Group** (*Socio-Demographic & Academic Profile*): Your response (`25–34 yrs`) acted as a protective buffer with a factor weight of **`-1.0880`**.
+- **Educational Qualification** (*Socio-Demographic & Academic Profile*): Your response (`Master's Degree`) acted as a protective buffer with a factor weight of **`-1.0409`**.
 
 ---
 

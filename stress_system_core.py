@@ -1,5 +1,5 @@
 """
-Core Machine Learning, Explainable AI, and Generative AI Personalized Feedback Engine
+Core Machine Learning and Generative AI Personalized Feedback Engine
 Project: DESIGN AND IMPLEMENTATION OF A GENERATIVE AI-BASED PERSONALIZED FEEDBACK SYSTEM
          FOR ACADEMIC STAFF STRESS-LEVEL ASSESSMENT
 Author:  OKON, GOODNEWS ASUQUO (AK22/PHS/CSC/078)
@@ -532,7 +532,7 @@ def evaluate_models_stratified_5fold(
 
 
 # ---------------------------------------------------------------------------
-# 5. INSTANCE-LEVEL EXPLAINABILITY (SHAP & LINEAR LOGISTIC WEIGHTS)
+# 5. INDIVIDUAL STRESS PROFILE & FACTOR CONTRIBUTIONS
 # ---------------------------------------------------------------------------
 
 def explain_individual_staff(
@@ -543,11 +543,11 @@ def explain_individual_staff(
     top_k: int = 5,
 ) -> Dict[str, Any]:
     """
-    Computes transparent instance-level feature attributions for a single academic staff
+    Computes individual stress profile and feature contributions for a single academic staff
     member across the 15 Pearson features.
-    - For Logistic Regression (Ridge / Elastic Net): Computes analytical standardized feature
-      contributions: phi_j = w_j * (x_j - mu_j) / sigma_j.
-    - For Tree models: Computes marginal feature attributions against the background.
+    - For Logistic Regression (Ridge / Elastic Net): Computes standardized feature contributions:
+      phi_j = w_j * (x_j - mu_j) / sigma_j.
+    - For Tree models: Computes marginal feature contributions against the background.
     """
     x_inst = pd.DataFrame([staff_row[features].values], columns=features)
     pred_class = int(selected_pipeline.predict(x_inst)[0])
@@ -557,7 +557,6 @@ def explain_individual_staff(
     scaler = selected_pipeline.named_steps.get("scaler")
 
     if hasattr(clf, "coef_"):
-        # Linear logistic model attribution
         weights = clf.coef_[0]
         if scaler:
             x_scaled = scaler.transform(x_inst)[0]
@@ -568,7 +567,6 @@ def explain_individual_staff(
             x_scaled = (x_inst.values[0] - mu) / sigma
             contributions = weights * x_scaled
     else:
-        # Tree model feature importances scaled by deviation from mean
         importances = clf.feature_importances_
         mu = df_background[features].mean().values
         sigma = df_background[features].std().replace(0, 1).values
@@ -584,22 +582,23 @@ def explain_individual_staff(
             "domain": FEATURE_DOMAINS[col],
             "numeric_value": iv,
             "decoded_response": VALUE_DECODERS.get(col, {}).get(iv, str(iv)),
+            "weight_contribution": round(float(c_val), 4),
             "shap_value": round(float(c_val), 4),
-            "abs_shap": round(abs(float(c_val)), 4),
+            "abs_weight": round(abs(float(c_val)), 4),
             "direction": "Increases Stress Risk (+)" if c_val > 0 else "Reduces Stress Risk (-)",
         })
 
-    contrib_df = pd.DataFrame(records).sort_values("abs_shap", ascending=False).reset_index(drop=True)
+    contrib_df = pd.DataFrame(records).sort_values("abs_weight", ascending=False).reset_index(drop=True)
 
     stress_drivers = (
-        contrib_df[contrib_df["shap_value"] > 0]
-        .sort_values("shap_value", ascending=False)
+        contrib_df[contrib_df["weight_contribution"] > 0]
+        .sort_values("weight_contribution", ascending=False)
         .head(top_k)
         .to_dict(orient="records")
     )
     protective_buffers = (
-        contrib_df[contrib_df["shap_value"] < 0]
-        .sort_values("shap_value", ascending=True)
+        contrib_df[contrib_df["weight_contribution"] < 0]
+        .sort_values("weight_contribution", ascending=True)
         .head(top_k)
         .to_dict(orient="records")
     )
@@ -868,7 +867,7 @@ def build_deterministic_rag_feedback(
     buffers = explanation["protective_buffers"]
 
     lines = [
-        f"### Personalized Stress-Level Assessment & Feedback Report (`{staff_code}`)",
+        f"### Personalized Stress-Level Assessment & Generative AI Feedback Report (`{staff_code}`)",
         "",
         f"**Academic Profile:** {rank_str} ({qual_str}, {exp_str} teaching experience) — *Akwa Ibom State University (AKSU)*  ",
         f"**Assessed Stress Category ({selected_model_name}):** **{stress_label}** "
@@ -877,14 +876,14 @@ def build_deterministic_rag_feedback(
         "",
         "---",
         "",
-        "#### 1. Explainable AI Feature Attribution Breakdown",
+        "#### 1. Stress Indicator Breakdown",
     ]
 
     if explanation["predicted_class"] == 1:
         lines.append(
             "Your questionnaire responses indicate an **elevated occupational stress profile (High Stress)**. "
             "The model identified the specific Pearson-selected occupational, technological, and behavioural "
-            "factors driving your stress level:"
+            "factors contributing to your stress level:"
         )
     else:
         lines.append(
@@ -899,7 +898,7 @@ def build_deterministic_rag_feedback(
         for d in drivers[:4]:
             lines.append(
                 f"- **{d['feature_label']}** (*{d['domain']}*): Your response (`{d['decoded_response']}`) "
-                f"contributed an attribution weight of **`+{d['shap_value']:.4f}`**."
+                f"contributed a factor weight of **`+{d['weight_contribution']:.4f}`**."
             )
     if buffers:
         lines.append("")
@@ -907,7 +906,7 @@ def build_deterministic_rag_feedback(
         for b in buffers[:3]:
             lines.append(
                 f"- **{b['feature_label']}** (*{b['domain']}*): Your response (`{b['decoded_response']}`) "
-                f"acted as a protective buffer with an attribution weight of **`{b['shap_value']:.4f}`**."
+                f"acted as a protective buffer with a factor weight of **`{b['weight_contribution']:.4f}`**."
             )
 
     lines.extend([
