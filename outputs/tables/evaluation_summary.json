@@ -9,18 +9,18 @@
       76
     ],
     "sheet5_shape": [
-      23,
+      25,
       6
     ],
     "missing_values_sheet3": 0,
     "row_sum_matches_total": "74/74",
-    "attribute_sum_matches_sheet5": "23/23",
+    "attribute_sum_matches_sheet5": "23/25",
     "class_distribution": {
-      "Low Stress (0)": 48,
-      "High Stress (1)": 26
+      "Low Stress (0)": 58,
+      "High Stress (1)": 16
     }
   },
-  "best_model_name": "Ridge Logistic Regression",
+  "best_model_name": "Random Forest",
   "augmented_sample_size": 110,
   "pearson_selected_features_count": 15,
   "pearson_15_features": [
@@ -42,212 +42,212 @@
   ],
   "cv5_summary": {
     "Elastic Net Logistic Regression": {
-      "mean_accuracy": 0.9636,
-      "std_accuracy": 0.053,
-      "mean_precision": 0.96,
-      "std_precision": 0.08,
-      "mean_recall": 0.9528,
-      "std_recall": 0.058,
-      "mean_f1": 0.9551,
-      "std_f1": 0.0621,
-      "mean_roc_auc": 0.9948,
-      "std_roc_auc": 0.0069,
-      "oof_accuracy": 0.9636,
-      "oof_precision": 0.9524,
-      "oof_recall": 0.9524,
-      "oof_f1": 0.9524,
-      "oof_roc_auc": 0.9979,
+      "mean_accuracy": 0.9,
+      "std_accuracy": 0.0927,
+      "mean_precision": 0.8381,
+      "std_precision": 0.1828,
+      "mean_recall": 0.8429,
+      "std_recall": 0.1393,
+      "mean_f1": 0.8322,
+      "std_f1": 0.1445,
+      "mean_roc_auc": 0.9585,
+      "std_roc_auc": 0.0503,
+      "oof_accuracy": 0.9,
+      "oof_precision": 0.8182,
+      "oof_recall": 0.8438,
+      "oof_f1": 0.8308,
+      "oof_roc_auc": 0.9591,
       "f1_ci_95": [
-        0.8944,
-        0.9884
+        0.7227,
+        0.9127
       ],
       "confusion_matrix": [
         [
-          66,
-          2
+          72,
+          6
         ],
         [
-          2,
-          40
+          5,
+          27
         ]
       ],
-      "tp": 40,
-      "tn": 66,
-      "fp": 2,
-      "fn": 2
+      "tp": 27,
+      "tn": 72,
+      "fp": 6,
+      "fn": 5
     },
     "Ridge Logistic Regression": {
-      "mean_accuracy": 0.9727,
-      "std_accuracy": 0.0364,
-      "mean_precision": 0.9778,
-      "std_precision": 0.0444,
-      "mean_recall": 0.9528,
-      "std_recall": 0.058,
-      "mean_f1": 0.9644,
-      "std_f1": 0.0458,
-      "mean_roc_auc": 0.9966,
-      "std_roc_auc": 0.0068,
-      "oof_accuracy": 0.9727,
-      "oof_precision": 0.9756,
-      "oof_recall": 0.9524,
-      "oof_f1": 0.9639,
-      "oof_roc_auc": 0.9986,
+      "mean_accuracy": 0.9,
+      "std_accuracy": 0.0927,
+      "mean_precision": 0.8095,
+      "std_precision": 0.1656,
+      "mean_recall": 0.8714,
+      "std_recall": 0.1238,
+      "mean_f1": 0.837,
+      "std_f1": 0.1449,
+      "mean_roc_auc": 0.9627,
+      "std_roc_auc": 0.0514,
+      "oof_accuracy": 0.9,
+      "oof_precision": 0.8,
+      "oof_recall": 0.875,
+      "oof_f1": 0.8358,
+      "oof_roc_auc": 0.9631,
       "f1_ci_95": [
-        0.9124,
-        1.0
+        0.7259,
+        0.9162
+      ],
+      "confusion_matrix": [
+        [
+          71,
+          7
+        ],
+        [
+          4,
+          28
+        ]
+      ],
+      "tp": 28,
+      "tn": 71,
+      "fp": 7,
+      "fn": 4
+    },
+    "Shallow Decision Tree": {
+      "mean_accuracy": 0.8091,
+      "std_accuracy": 0.0782,
+      "mean_precision": 0.7687,
+      "std_precision": 0.226,
+      "mean_recall": 0.7,
+      "std_recall": 0.1694,
+      "mean_f1": 0.6831,
+      "std_f1": 0.0902,
+      "mean_roc_auc": 0.8368,
+      "std_roc_auc": 0.0476,
+      "oof_accuracy": 0.8091,
+      "oof_precision": 0.6667,
+      "oof_recall": 0.6875,
+      "oof_f1": 0.6769,
+      "oof_roc_auc": 0.8472,
+      "f1_ci_95": [
+        0.5322,
+        0.8
       ],
       "confusion_matrix": [
         [
           67,
-          1
-        ],
-        [
-          2,
-          40
-        ]
-      ],
-      "tp": 40,
-      "tn": 67,
-      "fp": 1,
-      "fn": 2
-    },
-    "Shallow Decision Tree": {
-      "mean_accuracy": 0.8182,
-      "std_accuracy": 0.0498,
-      "mean_precision": 0.75,
-      "std_precision": 0.043,
-      "mean_recall": 0.7889,
-      "std_recall": 0.0793,
-      "mean_f1": 0.7683,
-      "std_f1": 0.0581,
-      "mean_roc_auc": 0.8334,
-      "std_roc_auc": 0.0734,
-      "oof_accuracy": 0.8182,
-      "oof_precision": 0.75,
-      "oof_recall": 0.7857,
-      "oof_f1": 0.7674,
-      "oof_roc_auc": 0.8314,
-      "f1_ci_95": [
-        0.6667,
-        0.8603
-      ],
-      "confusion_matrix": [
-        [
-          57,
           11
         ],
         [
-          9,
-          33
+          10,
+          22
         ]
       ],
-      "tp": 33,
-      "tn": 57,
+      "tp": 22,
+      "tn": 67,
       "fp": 11,
-      "fn": 9
+      "fn": 10
     },
     "Random Forest": {
-      "mean_accuracy": 0.9273,
-      "std_accuracy": 0.0617,
-      "mean_precision": 0.9306,
-      "std_precision": 0.0904,
-      "mean_recall": 0.8833,
-      "std_recall": 0.0706,
-      "mean_f1": 0.9055,
-      "std_f1": 0.0751,
-      "mean_roc_auc": 0.9878,
-      "std_roc_auc": 0.0151,
-      "oof_accuracy": 0.9273,
-      "oof_precision": 0.925,
-      "oof_recall": 0.881,
-      "oof_f1": 0.9024,
-      "oof_roc_auc": 0.9856,
+      "mean_accuracy": 0.9182,
+      "std_accuracy": 0.053,
+      "mean_precision": 0.9214,
+      "std_precision": 0.102,
+      "mean_recall": 0.781,
+      "std_recall": 0.1673,
+      "mean_f1": 0.8377,
+      "std_f1": 0.1234,
+      "mean_roc_auc": 0.9708,
+      "std_roc_auc": 0.0434,
+      "oof_accuracy": 0.9182,
+      "oof_precision": 0.9259,
+      "oof_recall": 0.7812,
+      "oof_f1": 0.8475,
+      "oof_roc_auc": 0.9704,
       "f1_ci_95": [
-        0.8241,
-        0.9613
+        0.7424,
+        0.931
       ],
       "confusion_matrix": [
         [
-          65,
-          3
+          76,
+          2
         ],
         [
-          5,
-          37
+          7,
+          25
         ]
       ],
-      "tp": 37,
-      "tn": 65,
-      "fp": 3,
-      "fn": 5
+      "tp": 25,
+      "tn": 76,
+      "fp": 2,
+      "fn": 7
     }
   },
   "holdout_summary": {
     "Elastic Net Logistic Regression": {
       "accuracy": 0.9545,
-      "precision": 1.0,
-      "recall": 0.875,
-      "f1": 0.9333,
+      "precision": 0.8571,
+      "recall": 1.0,
+      "f1": 0.9231,
       "roc_auc": 1.0,
       "confusion_matrix": [
         [
-          14,
-          0
+          15,
+          1
         ],
         [
-          1,
-          7
+          0,
+          6
         ]
       ]
     },
     "Ridge Logistic Regression": {
       "accuracy": 0.9545,
-      "precision": 1.0,
-      "recall": 0.875,
-      "f1": 0.9333,
-      "roc_auc": 1.0,
+      "precision": 0.8571,
+      "recall": 1.0,
+      "f1": 0.9231,
+      "roc_auc": 0.9896,
       "confusion_matrix": [
         [
-          14,
-          0
+          15,
+          1
         ],
         [
-          1,
-          7
+          0,
+          6
         ]
       ]
     },
     "Shallow Decision Tree": {
-      "accuracy": 0.9091,
+      "accuracy": 0.8636,
       "precision": 0.8,
-      "recall": 1.0,
-      "f1": 0.8889,
-      "roc_auc": 0.9241,
+      "recall": 0.6667,
+      "f1": 0.7273,
+      "roc_auc": 0.9635,
       "confusion_matrix": [
         [
-          12,
-          2
+          15,
+          1
         ],
         [
-          0,
-          8
+          2,
+          4
         ]
       ]
     },
     "Random Forest": {
-      "accuracy": 0.8636,
-      "precision": 0.7778,
-      "recall": 0.875,
-      "f1": 0.8235,
-      "roc_auc": 0.9643,
+      "accuracy": 0.9545,
+      "precision": 0.8571,
+      "recall": 1.0,
+      "f1": 0.9231,
+      "roc_auc": 1.0,
       "confusion_matrix": [
         [
-          12,
-          2
+          15,
+          1
         ],
         [
-          1,
-          7
+          0,
+          6
         ]
       ]
     }

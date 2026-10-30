@@ -1,24 +1,26 @@
 Staff code,Responses,feature_key,feature_label,domain,mean_score_per_staff
 age,182,age,Age Group,Socio-Demographic & Academic Profile,2.46
-gender,40,gender,Gender,Socio-Demographic & Academic Profile,0.54
-educational qualification,120,educational_qualification,Educational Qualification,Socio-Demographic & Academic Profile,1.62
-academic rank,261,academic_rank,Academic Rank / Cadre,Socio-Demographic & Academic Profile,3.53
-teaching experience,195,teaching_experience,Years of Teaching Experience,Socio-Demographic & Academic Profile,2.64
-teaching workload,171,teaching_workload,Heavy Teaching Workload,Occupational & Institutional Stressors,2.31
-research responsibilities,162,research_responsibilities,Research & Publication Pressure,Occupational & Institutional Stressors,2.19
-administrative responsibilities,170,administrative_responsibilities,Administrative Responsibilities,Occupational & Institutional Stressors,2.3
-examination supervision/marking,127,exam_supervision_marking,Exam Supervision & Script Marking,Occupational & Institutional Stressors,1.72
-teaching hours,140,teaching_hours,Weekly Teaching Hours,Occupational & Institutional Stressors,1.89
-Gen-AI tool frequency,97,genai_tool_frequency,Gen-AI Tool Usage Frequency,Technological & Gen-AI Adoption Factors,1.31
-Gen-AI tool (research and teaching),101,genai_research_teaching_usefulness,Perceived Usefulness of Gen-AI (Teaching/Research),Technological & Gen-AI Adoption Factors,1.36
-Gen-AI ( administration responsible ),81,genai_admin_use,Gen-AI Usage for Administrative Tasks,Technological & Gen-AI Adoption Factors,1.09
-smoking,19,smoking,Smoking Habit,"Behavioural, Lifestyle & Physiological Indicators",0.26
-alcohol consumption,30,alcohol_consumption,Alcohol Consumption,"Behavioural, Lifestyle & Physiological Indicators",0.41
-alcohol consumption frequency,50,alcohol_frequency,Alcohol Consumption Frequency,"Behavioural, Lifestyle & Physiological Indicators",0.68
-physical exercise,57,physical_exercise,Engagement in Physical Exercise,"Behavioural, Lifestyle & Physiological Indicators",0.77
-physical exercise frequency,109,physical_exercise_frequency,Physical Exercise Frequency,"Behavioural, Lifestyle & Physiological Indicators",1.47
-break frequency during  working days,108,break_frequency,Workday Break Frequency,"Behavioural, Lifestyle & Physiological Indicators",1.46
-health-related problems affect your ability to cope with your job?,89,health_problems_affect_coping,Health Problems Affecting Job Coping,"Behavioural, Lifestyle & Physiological Indicators",1.2
-2ence to receive personalized feedback for your stress level assessment?,141,feedback_preference,Preference for Personalized Stress Feedback,Technological & Gen-AI Adoption Factors,1.91
-personalized feedback frequency,76,feedback_frequency,Preferred Feedback Schedule,Technological & Gen-AI Adoption Factors,1.03
-GEN-AI system trust,141,genai_system_trust,Trust in Gen-AI Stress Feedback System,Technological & Gen-AI Adoption Factors,1.91
+gender,115,gender,Gender,Socio-Demographic & Academic Profile,1.55
+educational qualification,36,educational_qualification,Educational Qualification,Socio-Demographic & Academic Profile,0.49
+academic rank,257,academic_rank,Academic Rank,Socio-Demographic & Academic Profile,3.47
+teaching experience,180,teaching_experience,Teaching Experience,Socio-Demographic & Academic Profile,2.43
+teaching workload,170,teaching_workload,Teaching Workload,Occupational & Institutional Stressors,2.3
+research responsibilities,162,research_responsibilities,Research Responsibilities,Occupational & Institutional Stressors,2.19
+administrative responsibilities,169,administrative_responsibilities,Administrative Responsibilities,Occupational & Institutional Stressors,2.28
+examination supervision/marking,126,exam_supervision_marking,Exam Supervision & Marking,Occupational & Institutional Stressors,1.7
+teaching hours,90,teaching_hours,Weekly Teaching Hours,Occupational & Institutional Stressors,1.22
+Gen-AI tool frequency,77,genai_tool_frequency,Gen-AI Tool Frequency,Technological & Gen-AI Adoption Factors,1.04
+Gen-AI tool (research and teaching),81,genai_research_teaching_usefulness,Gen-AI Usefulness (Research/Teaching),Technological & Gen-AI Adoption Factors,1.09
+Gen-AI ( administration responsible ),60,genai_admin_use,Gen-AI for Administrative Tasks,Technological & Gen-AI Adoption Factors,0.81
+smoking,4,smoking,Smoking Status,"Behavioural, Lifestyle & Physiological Indicators",0.05
+alcohol consumption,27,alcohol_consumption,Alcohol Consumption,"Behavioural, Lifestyle & Physiological Indicators",0.36
+alcohol consumption frequency,52,alcohol_frequency,Alcohol Consumption Frequency,"Behavioural, Lifestyle & Physiological Indicators",0.7
+physical exercise,57,physical_exercise,Physical Exercise,"Behavioural, Lifestyle & Physiological Indicators",0.77
+physical exercise frequency,108,physical_exercise_frequency,Physical Exercise Frequency,"Behavioural, Lifestyle & Physiological Indicators",1.46
+break frequency during  working days,87,break_frequency,Workday Break Frequency,"Behavioural, Lifestyle & Physiological Indicators",1.18
+health-related problems affect your ability to cope with your job?,87,health_problems_affect_coping,Health Problems Affecting Coping,"Behavioural, Lifestyle & Physiological Indicators",1.18
+2ence to receive personalized feedback for your stress level assessment?,118,feedback_preference,Preference for Personalized Feedback,Technological & Gen-AI Adoption Factors,1.59
+personalized feedback frequency,91,feedback_frequency,Preferred Feedback Schedule,Technological & Gen-AI Adoption Factors,1.23
+GEN-AI system trust,119,genai_system_trust,Trust in Gen-AI System,Technological & Gen-AI Adoption Factors,1.61
+TOTAL,0,total_score,total_score,Other,0.0
+CLASSES,0,stress_class,stress_class,Other,0.0

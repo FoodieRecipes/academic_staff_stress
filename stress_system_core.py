@@ -47,7 +47,13 @@ warnings.filterwarnings("ignore")
 # 1. DIRECTORIES & SCHEMA DEFINITIONS
 # ---------------------------------------------------------------------------
 
-EXCEL_PATH = Path("my dataset google form_new.xlsx")
+def get_default_excel_path() -> Path:
+    for candidate in [Path("my dataset.xlsx"), Path("my dataset google form_new.xlsx")]:
+        if candidate.exists():
+            return candidate
+    return Path("my dataset.xlsx")
+
+EXCEL_PATH = get_default_excel_path()
 OUTPUT_DIR = Path("outputs")
 FIGURES_DIR = OUTPUT_DIR / "figures"
 MODELS_DIR = OUTPUT_DIR / "models"
@@ -77,6 +83,7 @@ COLUMN_RENAME_MAP: Dict[str, str] = {
     "alcohol consumption": "alcohol_consumption",
     "alcohol consumption frequency": "alcohol_frequency",
     "physical exercise": "physical_exercise",
+    "physical excerce?": "physical_exercise",
     "physical exercise frequency": "physical_exercise_frequency",
     "break frequency during  working days": "break_frequency",
     "health-related problems affect your ability to cope with your job?": "health_problems_affect_coping",
@@ -88,109 +95,417 @@ COLUMN_RENAME_MAP: Dict[str, str] = {
     "CLASSES": "stress_class",
 }
 
-FEATURE_LABELS: Dict[str, str] = {
-    "age": "Age Group",
-    "gender": "Gender",
-    "educational_qualification": "Educational Qualification",
-    "academic_rank": "Academic Rank / Cadre",
-    "teaching_experience": "Years of Teaching Experience",
-    "teaching_workload": "Heavy Teaching Workload",
-    "research_responsibilities": "Research & Publication Pressure",
-    "administrative_responsibilities": "Administrative Responsibilities",
-    "exam_supervision_marking": "Exam Supervision & Script Marking",
-    "teaching_hours": "Weekly Teaching Hours",
-    "genai_tool_frequency": "Gen-AI Tool Usage Frequency",
-    "genai_research_teaching_usefulness": "Perceived Usefulness of Gen-AI (Teaching/Research)",
-    "genai_admin_use": "Gen-AI Usage for Administrative Tasks",
-    "smoking": "Smoking Habit",
-    "alcohol_consumption": "Alcohol Consumption",
-    "alcohol_frequency": "Alcohol Consumption Frequency",
-    "physical_exercise": "Engagement in Physical Exercise",
-    "physical_exercise_frequency": "Physical Exercise Frequency",
-    "break_frequency": "Workday Break Frequency",
-    "health_problems_affect_coping": "Health Problems Affecting Job Coping",
-    "feedback_preference": "Preference for Personalized Stress Feedback",
-    "feedback_frequency": "Preferred Feedback Schedule",
-    "genai_system_trust": "Trust in Gen-AI Stress Feedback System",
-}
-
-FEATURE_DOMAINS: Dict[str, str] = {
-    "age": "Socio-Demographic & Academic Profile",
-    "gender": "Socio-Demographic & Academic Profile",
-    "educational_qualification": "Socio-Demographic & Academic Profile",
-    "academic_rank": "Socio-Demographic & Academic Profile",
-    "teaching_experience": "Socio-Demographic & Academic Profile",
-    "teaching_workload": "Occupational & Institutional Stressors",
-    "research_responsibilities": "Occupational & Institutional Stressors",
-    "administrative_responsibilities": "Occupational & Institutional Stressors",
-    "exam_supervision_marking": "Occupational & Institutional Stressors",
-    "teaching_hours": "Occupational & Institutional Stressors",
-    "genai_tool_frequency": "Technological & Gen-AI Adoption Factors",
-    "genai_research_teaching_usefulness": "Technological & Gen-AI Adoption Factors",
-    "genai_admin_use": "Technological & Gen-AI Adoption Factors",
-    "feedback_preference": "Technological & Gen-AI Adoption Factors",
-    "feedback_frequency": "Technological & Gen-AI Adoption Factors",
-    "genai_system_trust": "Technological & Gen-AI Adoption Factors",
-    "smoking": "Behavioural, Lifestyle & Physiological Indicators",
-    "alcohol_consumption": "Behavioural, Lifestyle & Physiological Indicators",
-    "alcohol_frequency": "Behavioural, Lifestyle & Physiological Indicators",
-    "physical_exercise": "Behavioural, Lifestyle & Physiological Indicators",
-    "physical_exercise_frequency": "Behavioural, Lifestyle & Physiological Indicators",
-    "break_frequency": "Behavioural, Lifestyle & Physiological Indicators",
-    "health_problems_affect_coping": "Behavioural, Lifestyle & Physiological Indicators",
-}
-
-VALUE_DECODERS: Dict[str, Dict[int, str]] = {
-    "age": {0: "Under 25 yrs", 1: "25–34 yrs", 2: "35–44 yrs", 3: "45–54 yrs", 4: "55 yrs & above"},
-    "gender": {0: "Male", 1: "Female", 2: "Prefer not to say"},
-    "educational_qualification": {0: "Bachelor's Degree", 1: "Master's Degree", 2: "Doctorate (PhD)", 3: "Other"},
+# ---------------------------------------------------------------------------
+# FEATURE DICTIONARY: CANONICAL SURVEY QUESTIONS, OPTIONS, AND 0-6 ENCODINGS
+# Grounded in official codebook (dataset features.docx / Sheet 1 in my dataset.xlsx)
+# ---------------------------------------------------------------------------
+FEATURE_DICTIONARY: Dict[str, Dict[str, Any]] = {
+    "age": {
+        "question_text": "Age Group",
+        "label": "Age Group",
+        "domain": "Socio-Demographic & Academic Profile",
+        "options": ["Below 25 yrs", "25–34 yrs", "35–44 yrs", "45–54 yrs", "55 yrs & above"],
+        "default": "35–44 yrs",
+        "encoder": {
+            "below 25yrs": 0, "below 25 yrs": 0, "under 25": 0, "0": 0,
+            "25-34": 1, "25-34yrs": 1, "25–34 yrs": 1, "25–34": 1, "1": 1,
+            "35-44": 2, "35-44yrs": 2, "35–44 yrs": 2, "35–44": 2, "2": 2,
+            "45-54": 3, "45-54yrs": 3, "45–54 yrs": 3, "45–54": 3, "3": 3,
+            "55 and above": 4, "55 yrs & above": 4, "55+": 4, "4": 4,
+        },
+        "decoder": {
+            0: "Below 25 yrs", 1: "25–34 yrs", 2: "35–44 yrs", 3: "45–54 yrs", 4: "55 yrs & above"
+        },
+    },
+    "gender": {
+        "question_text": "Gender",
+        "label": "Gender",
+        "domain": "Socio-Demographic & Academic Profile",
+        "options": ["Female", "Male", "Prefer not to say"],
+        "default": "Male",
+        "encoder": {
+            "prefer not to say": 0, "0": 0,
+            "female": 1, "1": 1,
+            "male": 2, "2": 2,
+        },
+        "decoder": {
+            0: "Prefer not to say", 1: "Female", 2: "Male"
+        },
+    },
+    "educational_qualification": {
+        "question_text": "Highest Educational Qualification",
+        "label": "Educational Qualification",
+        "domain": "Socio-Demographic & Academic Profile",
+        "options": ["Bachelor’s degree", "Master’s degree", "Doctorate (PhD)", "Other"],
+        "default": "Doctorate (PhD)",
+        "encoder": {
+            "bachelor's degree": 0, "bachelor’s degree": 0, "other": 0, "0": 0,
+            "master's degree": 1, "master’s degree": 1, "1": 1,
+            "doctorate (phd)": 2, "doctorate(phd)": 2, "phd": 2, "2": 2,
+        },
+        "decoder": {
+            0: "Bachelor’s degree / Other", 1: "Master’s degree", 2: "Doctorate (PhD)"
+        },
+    },
     "academic_rank": {
-        0: "Graduate Assistant",
-        1: "Assistant Lecturer",
-        2: "Lecturer II",
-        3: "Lecturer I",
-        4: "Senior Lecturer",
-        5: "Associate Professor",
-        6: "Professor",
+        "question_text": "Academic Rank / Cadre",
+        "label": "Academic Rank",
+        "domain": "Socio-Demographic & Academic Profile",
+        "options": [
+            "Graduate Assistant", "Assistant Lecturer", "Lecturer II",
+            "Lecturer I", "Senior Lecturer", "Associate Professor", "Professor"
+        ],
+        "default": "Senior Lecturer",
+        "encoder": {
+            "graduate assistant": 0, "other": 0, "0": 0,
+            "assistant lecturer": 1, "1": 1,
+            "lecturer ii": 2, "2": 2,
+            "lecturer i": 3, "3": 3,
+            "senior lecturer": 4, "4": 4,
+            "associate professor": 5, "associate proffessor": 5, "5": 5,
+            "professor": 6, "6": 6,
+        },
+        "decoder": {
+            0: "Graduate Assistant / Other",
+            1: "Assistant Lecturer",
+            2: "Lecturer II",
+            3: "Lecturer I",
+            4: "Senior Lecturer",
+            5: "Associate Professor",
+            6: "Professor",
+        },
     },
     "teaching_experience": {
-        0: "0–1 year",
-        1: "1–5 years",
-        2: "6–10 years",
-        3: "11–15 years",
-        4: "15 years and above",
+        "question_text": "Years of Teaching Experience",
+        "label": "Teaching Experience",
+        "domain": "Socio-Demographic & Academic Profile",
+        "options": ["Below 1 year (0–1 yr)", "1–5 years", "6–10 years", "11–15 years", "15 years and above"],
+        "default": "6–10 years",
+        "encoder": {
+            "below 1 year (0–1 yr)": 0, "0-1 year": 0, "0–1 year": 0, "0": 0,
+            "1-5 years": 1, "1–5 years": 1, "1-5": 1, "1–5": 1, "1": 1,
+            "6-10 years": 2, "6–10 years": 2, "6-10": 2, "6–10": 2, "2": 2,
+            "11-15 years": 3, "11–15 years": 3, "11-15": 3, "11–15": 3, "3": 3,
+            "15 years and above": 4, "15 and above": 4, "4": 4,
+        },
+        "decoder": {
+            0: "Below 1 year (0–1 yr)", 1: "1–5 years", 2: "6–10 years", 3: "11–15 years", 4: "15 years and above"
+        },
     },
-    "teaching_workload": {0: "Strongly Disagree", 1: "Disagree", 2: "Neutral", 3: "Agree", 4: "Strongly Agree"},
-    "research_responsibilities": {0: "Strongly Disagree", 1: "Disagree", 2: "Neutral", 3: "Agree", 4: "Strongly Agree"},
-    "administrative_responsibilities": {0: "Strongly Disagree", 1: "Disagree", 2: "Neutral", 3: "Agree", 4: "Strongly Agree"},
-    "exam_supervision_marking": {0: "Rarely / No", 1: "Sometimes", 2: "Often", 3: "Very often"},
+    "teaching_workload": {
+        "question_text": "Heavy Teaching Workload: I experience heavy lecture loads, large classes, or excessive contact hours",
+        "label": "Teaching Workload",
+        "domain": "Occupational & Institutional Stressors",
+        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"],
+        "default": "Agree",
+        "encoder": {
+            "strongly disagree": 0, "0": 0, "disagree": 1, "1": 1,
+            "neutral": 2, "2": 2, "agree": 3, "3": 3, "strongly agree": 4, "4": 4,
+        },
+        "decoder": {
+            0: "Strongly Disagree", 1: "Disagree", 2: "Neutral", 3: "Agree", 4: "Strongly Agree"
+        },
+    },
+    "research_responsibilities": {
+        "question_text": "Research & Publication Pressure: I face intense pressure to conduct research, write proposals, and publish in indexed journals",
+        "label": "Research Responsibilities",
+        "domain": "Occupational & Institutional Stressors",
+        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"],
+        "default": "Agree",
+        "encoder": {
+            "strongly disagree": 0, "0": 0, "disagree": 1, "1": 1,
+            "neutral": 2, "2": 2, "agree": 3, "3": 3, "strongly agree": 4, "4": 4,
+        },
+        "decoder": {
+            0: "Strongly Disagree", 1: "Disagree", 2: "Neutral", 3: "Agree", 4: "Strongly Agree"
+        },
+    },
+    "administrative_responsibilities": {
+        "question_text": "Administrative Responsibilities: Committee work, departmental duties, and accreditation tasks add substantial strain",
+        "label": "Administrative Responsibilities",
+        "domain": "Occupational & Institutional Stressors",
+        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"],
+        "default": "Agree",
+        "encoder": {
+            "strongly disagree": 0, "0": 0, "disagree": 1, "1": 1,
+            "neutral": 2, "2": 2, "agree": 3, "3": 3, "strongly agree": 4, "4": 4,
+        },
+        "decoder": {
+            0: "Strongly Disagree", 1: "Disagree", 2: "Neutral", 3: "Agree", 4: "Strongly Agree"
+        },
+    },
+    "exam_supervision_marking": {
+        "question_text": "Examination Supervision & Script Marking: Pressure associated with invigilating exams and grading scripts within strict deadlines",
+        "label": "Exam Supervision & Marking",
+        "domain": "Occupational & Institutional Stressors",
+        "options": ["No / Never", "Sometimes", "Often", "Very often"],
+        "default": "Often",
+        "encoder": {
+            "no": 0, "never": 0, "no / never": 0, "nill": 0, "0": 0,
+            "sometimes": 1, "1": 1, "often": 2, "2": 2, "very often": 3, "3": 3,
+        },
+        "decoder": {
+            0: "No / Never", 1: "Sometimes", 2: "Often", 3: "Very often"
+        },
+    },
     "teaching_hours": {
-        0: "Less than 3 hours/week",
-        1: "Less than 6 hours/week",
-        2: "6–10 hours/week",
-        3: "10–15+ hours/week",
+        "question_text": "Weekly Teaching Hours: How many hours per week do you spend teaching in class?",
+        "label": "Weekly Teaching Hours",
+        "domain": "Occupational & Institutional Stressors",
+        "options": [
+            "Less than 3 hours per week", "Less than 6 hours per week",
+            "6–10 hours per week", "10–15 hours per week"
+        ],
+        "default": "6–10 hours per week",
+        "encoder": {
+            "less than 3 hours per week": 0, "less than 3 hours": 0, "0": 0,
+            "less than 6 hours per week": 1, "less than 6 hours": 1, "1": 1,
+            "6-10 hours per week": 2, "6–10 hours per week": 2, "6-10 hours": 2, "2": 2,
+            "10-15 hours per week": 3, "10–15 hours per week": 3, "10-15 hours": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Less than 3 hours per week", 1: "Less than 6 hours per week",
+            2: "6–10 hours per week", 3: "10–15 hours per week"
+        },
     },
-    "genai_tool_frequency": {0: "Never / Rarely", 1: "Sometimes", 2: "Often", 3: "Very often"},
-    "genai_research_teaching_usefulness": {0: "Not useful", 1: "Slightly useful", 2: "Very useful", 3: "Extremely useful"},
-    "genai_admin_use": {0: "Not at all", 1: "Sometimes", 2: "Often", 3: "Very often"},
-    "smoking": {0: "No", 1: "Yes, occasionally", 2: "Yes, regularly", 3: "Prefer not to say"},
-    "alcohol_consumption": {0: "No", 1: "Yes", 2: "Prefer not to say"},
-    "alcohol_frequency": {0: "Not at all", 1: "Rarely", 2: "Often", 3: "Very often"},
-    "physical_exercise": {0: "No / Minimal", 1: "Yes, engages in exercise"},
-    "physical_exercise_frequency": {0: "Not at all", 1: "Rarely", 2: "Often", 3: "Very often"},
-    "break_frequency": {0: "Never", 1: "Rarely", 2: "Often", 3: "Very often"},
-    "health_problems_affect_coping": {0: "Not at all", 1: "Rarely", 2: "Often", 3: "Very often"},
-    "feedback_preference": {0: "Not at all", 1: "Rarely", 2: "Prefer", 3: "Most preferred"},
+    "genai_tool_frequency": {
+        "question_text": "Gen-AI Tool Usage Frequency: How often do you use Generative AI tools (e.g. ChatGPT, Claude, Gemini) in your academic work?",
+        "label": "Gen-AI Tool Frequency",
+        "domain": "Technological & Gen-AI Adoption Factors",
+        "options": ["Never / Nill", "Sometimes", "Often", "Very often"],
+        "default": "Sometimes",
+        "encoder": {
+            "never": 0, "nill": 0, "never / nill": 0, "moderately useful": 0, "0": 0,
+            "sometimes": 1, "1": 1, "often": 2, "2": 2, "very often": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Never / Nill", 1: "Sometimes", 2: "Often", 3: "Very often"
+        },
+    },
+    "genai_research_teaching_usefulness": {
+        "question_text": "Perceived Usefulness of Gen-AI: How useful do you find Gen-AI tools for research, lecture preparation, and teaching?",
+        "label": "Gen-AI Usefulness (Research/Teaching)",
+        "domain": "Technological & Gen-AI Adoption Factors",
+        "options": ["Not useful", "Slightly useful", "Very useful", "Extremely useful"],
+        "default": "Very useful",
+        "encoder": {
+            "not useful": 0, "nill": 0, "0": 0, "slightly useful": 1, "useful": 1, "1": 1,
+            "very useful": 2, "2": 2, "extremely useful": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Not useful / Nill", 1: "Slightly useful", 2: "Very useful", 3: "Extremely useful"
+        },
+    },
+    "genai_admin_use": {
+        "question_text": "Gen-AI Usage for Administrative Tasks: How often do you use Gen-AI tools for administrative duties (memos, summaries, reports)?",
+        "label": "Gen-AI for Administrative Tasks",
+        "domain": "Technological & Gen-AI Adoption Factors",
+        "options": ["Not at all / Nill", "Sometimes", "Often", "Very often"],
+        "default": "Sometimes",
+        "encoder": {
+            "not at all": 0, "nill": 0, "not at all / nill": 0, "0": 0,
+            "sometimes": 1, "1": 1, "often": 2, "2": 2, "very often": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Not at all / Nill", 1: "Sometimes", 2: "Often", 3: "Very often"
+        },
+    },
+    "smoking": {
+        "question_text": "Smoking Habit: Do you smoke tobacco products?",
+        "label": "Smoking Status",
+        "domain": "Behavioural, Lifestyle & Physiological Indicators",
+        "options": ["No", "Yes, occasionally", "Yes, regularly", "Prefer not to say"],
+        "default": "No",
+        "encoder": {
+            "no": 0, "prefer not to say": 0, "yes, occasionally": 0, "0": 0,
+            "yes": 1, "yes, regularly": 1, "1": 1,
+        },
+        "decoder": {
+            0: "No / Occasionally / Prefer not to say", 1: "Yes"
+        },
+    },
+    "alcohol_consumption": {
+        "question_text": "Alcohol Consumption: Do you consume alcoholic beverages?",
+        "label": "Alcohol Consumption",
+        "domain": "Behavioural, Lifestyle & Physiological Indicators",
+        "options": ["No", "Yes", "Prefer not to say"],
+        "default": "No",
+        "encoder": {
+            "no": 0, "prefer not to say": 0, "0": 0, "yes": 1, "1": 1,
+        },
+        "decoder": {
+            0: "No / Prefer not to say", 1: "Yes"
+        },
+    },
+    "alcohol_frequency": {
+        "question_text": "Alcohol Consumption Frequency: If yes, how frequently do you consume alcohol?",
+        "label": "Alcohol Consumption Frequency",
+        "domain": "Behavioural, Lifestyle & Physiological Indicators",
+        "options": ["Not at all", "Rarely", "Often", "Very often"],
+        "default": "Not at all",
+        "encoder": {
+            "not at all": 0, "0": 0, "rarely": 1, "1": 1, "often": 2, "2": 2, "very often": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Not at all", 1: "Rarely", 2: "Often", 3: "Very often"
+        },
+    },
+    "physical_exercise": {
+        "question_text": "Engagement in Physical Exercise: Do you engage in regular physical exercise?",
+        "label": "Physical Exercise",
+        "domain": "Behavioural, Lifestyle & Physiological Indicators",
+        "options": ["No", "Yes"],
+        "default": "Yes",
+        "encoder": {
+            "no": 0, "0": 0, "yes": 1, "1": 1,
+        },
+        "decoder": {
+            0: "No", 1: "Yes"
+        },
+    },
+    "physical_exercise_frequency": {
+        "question_text": "Physical Exercise Frequency: How often do you participate in physical exercise sessions?",
+        "label": "Physical Exercise Frequency",
+        "domain": "Behavioural, Lifestyle & Physiological Indicators",
+        "options": ["Not at all", "Rarely", "Often", "Very often"],
+        "default": "Rarely",
+        "encoder": {
+            "not at all": 0, "0": 0, "rarely": 1, "1": 1, "often": 2, "2": 2, "very often": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Not at all", 1: "Rarely", 2: "Often", 3: "Very often"
+        },
+    },
+    "break_frequency": {
+        "question_text": "Workday Break Frequency: How often do you take intentional breaks during working days?",
+        "label": "Workday Break Frequency",
+        "domain": "Behavioural, Lifestyle & Physiological Indicators",
+        "options": ["Never / Nill", "Rarely", "Often", "Very often"],
+        "default": "Rarely",
+        "encoder": {
+            "never": 0, "nill": 0, "never / nill": 0, "0": 0,
+            "rarely": 1, "1": 1, "often": 2, "2": 2, "very often": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Never / Nill", 1: "Rarely", 2: "Often", 3: "Very often"
+        },
+    },
+    "health_problems_affect_coping": {
+        "question_text": "Health-Related Coping Impact: Do health-related problems affect your ability to cope with your job?",
+        "label": "Health Problems Affecting Coping",
+        "domain": "Behavioural, Lifestyle & Physiological Indicators",
+        "options": ["Not at all", "Rarely", "Often", "Very often"],
+        "default": "Rarely",
+        "encoder": {
+            "not at all": 0, "0": 0, "rarely": 1, "1": 1, "often": 2, "2": 2, "very often": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Not at all", 1: "Rarely", 2: "Often", 3: "Very often"
+        },
+    },
+    "feedback_preference": {
+        "question_text": "Preference for Personalized Feedback: Preference to receive personalized feedback for your stress level assessment",
+        "label": "Preference for Personalized Feedback",
+        "domain": "Technological & Gen-AI Adoption Factors",
+        "options": ["Not at all / Nill", "Rarely", "Prefer", "Most preferred"],
+        "default": "Prefer",
+        "encoder": {
+            "not at all": 0, "nill": 0, "not at all / nill": 0, "0": 0,
+            "rarely": 1, "1": 1, "prefer": 2, "2": 2, "most preferred": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Not at all / Nill", 1: "Rarely", 2: "Prefer", 3: "Most preferred"
+        },
+    },
     "feedback_frequency": {
-        0: "After every assessment",
-        1: "Once a week",
-        2: "Once a month",
-        3: "Only when I request it",
+        "question_text": "Preferred Feedback Schedule: How frequently would you like to receive stress assessment feedback?",
+        "label": "Preferred Feedback Schedule",
+        "domain": "Technological & Gen-AI Adoption Factors",
+        "options": ["Only when I request it", "Once a month", "Once a week", "After every assessment"],
+        "default": "Once a week",
+        "encoder": {
+            "only when i request it": 0, "only when i request it / nill": 0, "nill": 0, "0": 0,
+            "once a month": 1, "1": 1, "once a week": 2, "2": 2, "after every assessment": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Only when I request it", 1: "Once a month", 2: "Once a week", 3: "After every assessment"
+        },
     },
-    "genai_system_trust": {0: "Definitely not", 1: "Probably not", 2: "Not sure", 3: "Definitely yes"},
+    "genai_system_trust": {
+        "question_text": "Trust in Generative AI System: Trust in Generative AI-based stress assessment and recommendations",
+        "label": "Trust in Gen-AI System",
+        "domain": "Technological & Gen-AI Adoption Factors",
+        "options": ["Definitely not", "Probably not", "Not sure", "Definitely yes"],
+        "default": "Definitely yes",
+        "encoder": {
+            "definitely not": 0, "nill": 0, "definitely not / nill": 0, "0": 0,
+            "probably not": 1, "1": 1, "not sure": 2, "2": 2, "definitely yes": 3, "3": 3,
+        },
+        "decoder": {
+            0: "Definitely not / Nill", 1: "Probably not", 2: "Not sure", 3: "Definitely yes"
+        },
+    },
 }
 
-ALL_23_FEATURE_COLS: List[str] = list(FEATURE_LABELS.keys())
+FEATURE_LABELS: Dict[str, str] = {f: FEATURE_DICTIONARY[f]["label"] for f in FEATURE_DICTIONARY}
+FEATURE_DOMAINS: Dict[str, str] = {f: FEATURE_DICTIONARY[f]["domain"] for f in FEATURE_DICTIONARY}
+VALUE_DECODERS: Dict[str, Dict[int, str]] = {f: FEATURE_DICTIONARY[f]["decoder"] for f in FEATURE_DICTIONARY}
+ALL_23_FEATURE_COLS: List[str] = list(FEATURE_DICTIONARY.keys())
+
+
+def encode_feature_value(feature_key: str, val: Any) -> int:
+    """Safely maps arbitrary raw survey text or numeric representation to standardized Likert integer."""
+    if val is None:
+        return 0
+    if isinstance(val, (int, np.integer)):
+        return int(val)
+    if isinstance(val, float) and not np.isnan(val):
+        return int(val)
+
+    s = " ".join(str(val).strip().lower().split())
+    f_info = FEATURE_DICTIONARY.get(feature_key)
+    if f_info and "encoder" in f_info:
+        enc = f_info["encoder"]
+        if s in enc:
+            return enc[s]
+        for k, v in enc.items():
+            if k == s or k in s or s in k:
+                return v
+    try:
+        return int(float(s))
+    except ValueError:
+        return 0
+
+
+def decode_feature_value(feature_key: str, val: Any) -> str:
+    """Decodes integer value into its official human-readable survey response string."""
+    f_info = FEATURE_DICTIONARY.get(feature_key)
+    try:
+        int_v = int(float(val))
+    except (ValueError, TypeError):
+        int_v = 0
+    if f_info and "decoder" in f_info:
+        return f_info["decoder"].get(int_v, str(val))
+    return str(val)
+
+
+def encode_staff_responses(raw_dict: Dict[str, Any]) -> Dict[str, int]:
+    """Encodes a dictionary of raw questionnaire text answers into standardized model features."""
+    encoded = {}
+    for col in ALL_23_FEATURE_COLS:
+        val = raw_dict.get(col, raw_dict.get(FEATURE_LABELS.get(col, ""), None))
+        encoded[col] = encode_feature_value(col, val)
+    return encoded
+
+
+def decode_staff_responses(staff_series_or_dict: Any) -> Dict[str, str]:
+    """Decodes a staff respondent record into human-readable textual survey answers."""
+    decoded = {}
+    for col in ALL_23_FEATURE_COLS:
+        if col in staff_series_or_dict:
+            decoded[col] = decode_feature_value(col, staff_series_or_dict[col])
+    return decoded
+
 
 # ---------------------------------------------------------------------------
 # 2. THE 15 HIGH-CONTRIBUTION FEATURES SELECTED VIA PEARSON'S CORRELATION (|r| >= 0.30, p < 0.01)
@@ -198,54 +513,110 @@ ALL_23_FEATURE_COLS: List[str] = list(FEATURE_LABELS.keys())
 PEARSON_15_FEATURES: List[str] = [
     "teaching_experience",                 # r = +0.5008 (p < 0.0001)
     "academic_rank",                       # r = +0.4690 (p < 0.0001)
-    "age",                                 # r = +0.4307 (p < 0.0001)
-    "research_responsibilities",           # r = +0.4267 (p < 0.0001)
-    "teaching_workload",                   # r = +0.4192 (p < 0.0001)
-    "genai_tool_frequency",                # r = +0.3793 (p = 0.0009)
-    "genai_admin_use",                     # r = +0.3749 (p = 0.0010)
-    "health_problems_affect_coping",       # r = +0.3739 (p = 0.0010)
-    "feedback_frequency",                  # r = +0.3554 (p = 0.0019)
-    "educational_qualification",           # r = +0.3520 (p = 0.0021)
-    "genai_research_teaching_usefulness",  # r = +0.3473 (p = 0.0024)
-    "exam_supervision_marking",            # r = +0.3198 (p = 0.0055)
-    "alcohol_frequency",                   # r = +0.3119 (p = 0.0068)
-    "feedback_preference",                 # r = +0.3075 (p = 0.0077)
-    "break_frequency",                     # r = +0.3051 (p = 0.0082)
+    "age",                                 # r = +0.4592 (p < 0.0001)
+    "research_responsibilities",           # r = +0.4578 (p < 0.0001)
+    "teaching_workload",                   # r = +0.4287 (p < 0.0001)
+    "genai_tool_frequency",                # r = +0.3986 (p = 0.0004)
+    "genai_admin_use",                     # r = +0.3929 (p = 0.0005)
+    "health_problems_affect_coping",       # r = +0.3842 (p = 0.0007)
+    "feedback_frequency",                  # r = +0.3792 (p = 0.0008)
+    "educational_qualification",           # r = +0.3705 (p = 0.0011)
+    "genai_research_teaching_usefulness",  # r = +0.3644 (p = 0.0013)
+    "exam_supervision_marking",            # r = +0.3541 (p = 0.0019)
+    "alcohol_frequency",                   # r = +0.3458 (p = 0.0025)
+    "feedback_preference",                 # r = +0.3204 (p = 0.0054)
+    "break_frequency",                     # r = +0.3098 (p = 0.0072)
 ]
 
 FEATURE_COLS = PEARSON_15_FEATURES  # Active features for all modeling tasks
+
 
 # ---------------------------------------------------------------------------
 # 3. DATA LOADING & DATASET AUGMENTATION TO 110 SAMPLES
 # ---------------------------------------------------------------------------
 
 def load_all_project_sheets(excel_path: Path = EXCEL_PATH) -> Dict[str, pd.DataFrame]:
-    """Loads original Sheets 3, 4, and 5 from the project workbook."""
-    df_sheet3_raw = pd.read_excel(excel_path, sheet_name="digitized")
-    cleaned_cols = {}
-    for col in df_sheet3_raw.columns:
-        col_stripped = " ".join(str(col).strip().split())
-        matched = None
-        for k, v in COLUMN_RENAME_MAP.items():
-            if " ".join(k.strip().split()).lower() == col_stripped.lower():
-                matched = v
+    """
+    Loads original Sheets 1 (raw survey responses), 3 ('digitized'), 4 ('transpose'),
+    and 5 ('attributes responses') from the project workbook (preferring 'my dataset.xlsx'
+    with graceful fallback to 'my dataset google form_new.xlsx').
+    """
+    resolved_path = excel_path
+    if not resolved_path.exists():
+        for candidate in [Path("my dataset.xlsx"), Path("my dataset google form_new.xlsx")]:
+            if candidate.exists():
+                resolved_path = candidate
                 break
-        cleaned_cols[col] = matched if matched else col_stripped
 
-    df_sheet3 = df_sheet3_raw.rename(columns=cleaned_cols).copy()
-    df_sheet3 = df_sheet3.dropna(subset=["staff_code", "stress_class"]).reset_index(drop=True)
-    df_sheet3["staff_code"] = df_sheet3["staff_code"].astype(str).str.strip()
+    xl = pd.ExcelFile(resolved_path)
+    snames = {s.lower().strip(): s for s in xl.sheet_names}
+
+    # 1. Sheet 1: Raw Questionnaire Responses
+    s1_key = next((k for k in ["sheet1", "form responses 1", "raw data", "raw", "sheet 1"] if k in snames), None)
+    df_sheet1 = xl.parse(snames[s1_key]) if s1_key else pd.DataFrame()
+
+    # 2. Transpose Sheet
+    t_key = next((k for k in ["tranpose", "transpose"] if k in snames), None)
+    df_sheet4 = xl.parse(snames[t_key]) if t_key else pd.DataFrame()
+
+    # 3. Digitized Sheet / Respondents
+    df_sheet3 = None
+    dig_key = next((k for k in ["digitized"] if k in snames), None)
+    if dig_key:
+        df_dig_raw = xl.parse(snames[dig_key])
+        cols_clean = [str(c).strip() for c in df_dig_raw.columns]
+        if "TOTAL" in cols_clean and "CLASSES" in cols_clean:
+            cleaned_cols = {}
+            for col in df_dig_raw.columns:
+                col_stripped = " ".join(str(col).strip().split())
+                matched = None
+                for k, v in COLUMN_RENAME_MAP.items():
+                    if " ".join(k.strip().split()).lower() == col_stripped.lower():
+                        matched = v
+                        break
+                cleaned_cols[col] = matched if matched else col_stripped
+            df_sheet3 = df_dig_raw.rename(columns=cleaned_cols).copy()
+            df_sheet3 = df_sheet3.dropna(subset=["staff_code", "stress_class"]).reset_index(drop=True)
+            df_sheet3["staff_code"] = df_sheet3["staff_code"].astype(str).str.strip()
+
+    if df_sheet3 is None and not df_sheet4.empty:
+        # Reconstruct cleanly from Tranpose
+        row_names = [str(r).strip() for r in df_sheet4.iloc[:, 0].tolist()]
+        staff_cols = [c for c in df_sheet4.columns if str(c).strip().startswith("A")]
+        df_sheet3 = df_sheet4[staff_cols].T
+        cleaned_cols = []
+        for r in row_names:
+            r_strip = " ".join(str(r).strip().split())
+            matched = None
+            for k, v in COLUMN_RENAME_MAP.items():
+                if " ".join(k.strip().split()).lower() == r_strip.lower():
+                    matched = v
+                    break
+            cleaned_cols.append(matched if matched else r_strip)
+        df_sheet3.columns = cleaned_cols
+        df_sheet3["staff_code"] = staff_cols
+
     for col in ALL_23_FEATURE_COLS + ["total_score", "stress_class"]:
-        df_sheet3[col] = pd.to_numeric(df_sheet3[col], errors="coerce").fillna(0).astype(int)
+        if col in df_sheet3.columns:
+            df_sheet3[col] = pd.to_numeric(df_sheet3[col], errors="coerce").fillna(0).astype(int)
+    df_sheet3 = df_sheet3.reset_index(drop=True)
 
-    df_sheet4 = pd.read_excel(excel_path, sheet_name="transpose")
-    df_sheet4.columns = [str(c).strip() for c in df_sheet4.columns]
-    df_sheet4["Staff code"] = df_sheet4["Staff code"].astype(str).str.strip()
-
-    df_sheet5 = pd.read_excel(excel_path, sheet_name="attributes responses")
-    df_sheet5.columns = [str(c).strip() for c in df_sheet5.columns]
-    df_sheet5["Staff code"] = df_sheet5["Staff code"].astype(str).str.strip()
-    df_sheet5["Responses"] = pd.to_numeric(df_sheet5["Responses"], errors="coerce").fillna(0).astype(int)
+    # 4. Sheet 5: Attributes Responses
+    if "attributes responses" in snames:
+        df_sheet5 = xl.parse(snames["attributes responses"])
+        df_sheet5.columns = [str(c).strip() for c in df_sheet5.columns]
+        df_sheet5["Staff code"] = df_sheet5["Staff code"].astype(str).str.strip()
+        df_sheet5["Responses"] = pd.to_numeric(df_sheet5["Responses"], errors="coerce").fillna(0).astype(int)
+    elif not df_sheet4.empty and "Responses" in df_sheet4.columns:
+        df_sheet5 = pd.DataFrame({
+            "Staff code": df_sheet4.iloc[:, 0].astype(str).str.strip(),
+            "Responses": pd.to_numeric(df_sheet4["Responses"], errors="coerce").fillna(0).astype(int),
+        })
+    else:
+        df_sheet5 = pd.DataFrame({
+            "Staff code": [FEATURE_LABELS.get(c, c) for c in ALL_23_FEATURE_COLS],
+            "Responses": [int(df_sheet3[c].sum()) for c in ALL_23_FEATURE_COLS],
+        })
 
     mapped_keys = []
     for sc in df_sheet5["Staff code"]:
@@ -263,6 +634,7 @@ def load_all_project_sheets(excel_path: Path = EXCEL_PATH) -> Dict[str, pd.DataF
     df_sheet5["mean_score_per_staff"] = (df_sheet5["Responses"] / max(1, len(df_sheet3))).round(2)
 
     return {
+        "sheet1_raw": df_sheet1,
         "sheet3_digitized": df_sheet3,
         "sheet4_transpose": df_sheet4,
         "sheet5_attributes": df_sheet5,

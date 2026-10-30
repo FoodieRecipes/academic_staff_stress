@@ -19,8 +19,10 @@ import pandas as pd
 import streamlit as st
 
 from stress_system_core import (
+    ALL_23_FEATURE_COLS,
     AUGMENTED_DATA_PATH,
     EXCEL_PATH,
+    FEATURE_DICTIONARY,
     FEATURE_DOMAINS,
     FEATURE_LABELS,
     FIGURES_DIR,
@@ -29,185 +31,188 @@ from stress_system_core import (
     PEARSON_15_FEATURES,
     TABLES_DIR,
     VALUE_DECODERS,
+    decode_feature_value,
+    decode_staff_responses,
+    encode_feature_value,
+    encode_staff_responses,
     explain_individual_staff,
     generate_personalized_feedback,
     load_all_project_sheets,
 )
 
 st.set_page_config(
-    page_title="AKSU Academic Staff Stress Assessment & Generative AI System",
+    page_title="Academic Staff Stress Assessment & Gen-AI Feedback System",
     page_icon="🎓",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 
-@st.cache_data
-def get_cached_sheets():
-    return load_all_project_sheets(EXCEL_PATH)
-
-
-@st.cache_data
-def get_cached_augmented_data():
-    if AUGMENTED_DATA_PATH.exists():
-        return pd.read_csv(AUGMENTED_DATA_PATH)
-    from train_and_build_pipeline import run_complete_pipeline
-    run_complete_pipeline()
-    return pd.read_csv(AUGMENTED_DATA_PATH)
-
-
 @st.cache_resource
-def get_cached_model_bundle():
+def load_bundle_and_data():
     bundle_path = MODELS_DIR / "stress_assessment_bundle.joblib"
     if not bundle_path.exists():
-        from train_and_build_pipeline import run_complete_pipeline
-        run_complete_pipeline()
-    return joblib.load(bundle_path)
+        st.error(f"Model bundle not found at {bundle_path}. Please run train_and_build_pipeline.py first.")
+        st.stop()
+    bundle = joblib.load(bundle_path)
+
+    if AUGMENTED_DATA_PATH.exists():
+        df_aug = pd.read_csv(AUGMENTED_DATA_PATH)
+    else:
+        sheets_temp = load_all_project_sheets(EXCEL_PATH)
+        df_aug = sheets_temp["sheet3_digitized"]
+
+    sheets = load_all_project_sheets(EXCEL_PATH)
+    return bundle, df_aug, sheets
 
 
 def main():
-    sheets = get_cached_sheets()
+    bundle, df_aug, sheets = load_bundle_and_data()
     df3_orig = sheets["sheet3_digitized"]
     df4 = sheets["sheet4_transpose"]
     df5 = sheets["sheet5_attributes"]
-    df_aug = get_cached_augmented_data()
-    bundle = get_cached_model_bundle()
+    df1_raw = sheets.get("sheet1_raw", pd.DataFrame())
 
-    best_model_name = bundle.get("best_model_name", "Ridge Logistic Regression")
-    selected_model = bundle.get("selected_model")
-    trained_models = bundle.get("trained_models", {})
-    cv5_results = bundle.get("cv_results_5fold", {})
-
-    # Sidebar
-    st.sidebar.markdown("## 🎓 AKSU Stress Assessment System")
-    st.sidebar.caption(
-        "**Researcher:** Okon, Goodnews Asuquo (`AK22/PHS/CSC/078`)  \n"
-        "**Department:** Computer Science  \n"
-        "**Institution:** Akwa Ibom State University (AKSU)"
-    )
-    st.sidebar.divider()
-
-    st.sidebar.markdown("### ⚙️ Model Selection")
-    model_choice = st.sidebar.selectbox(
-        "Active Classifier:",
-        list(trained_models.keys()),
-        index=list(trained_models.keys()).index(best_model_name) if best_model_name in trained_models else 0,
-        help="Select among the 4 models evaluated via Stratified 5-Fold Cross-Validation.",
-    )
-    active_pipeline = trained_models.get(model_choice, selected_model)
-
-    st.sidebar.divider()
-    st.sidebar.markdown("### 🏆 Optimal Classifier (Ridge)")
-    if best_model_name in cv5_results:
-        cv_best = cv5_results[best_model_name]
-        st.sidebar.success(
-            f"**Selected Model:** `{best_model_name}`  \n"
-            f"**5-Fold CV Accuracy:** `{cv_best['mean_accuracy']*100:.2f}%`  \n"
-            f"**5-Fold CV F1-Score:** `{cv_best['mean_f1']*100:.2f}%`  \n"
-            f"**5-Fold CV ROC-AUC:** `{cv_best['mean_roc_auc']*100:.2f}%`  \n"
-            f"**OOF Errors:** `{cv_best['fp'] + cv_best['fn']} / 110`"
+    # -----------------------------------------------------------------------
+    # SIDEBAR: MODEL & GENERATIVE AI SETTINGS
+    # -----------------------------------------------------------------------
+    with st.sidebar:
+        st.title("⚙️ Settings")
+        st.subheader("Model Selection")
+        model_names = list(bundle["trained_models"].keys())
+        default_model = bundle.get("best_model_name", "Ridge Logistic Regression")
+        model_choice = st.selectbox(
+            "Classifier:",
+            options=model_names,
+            index=model_names.index(default_model) if default_model in model_names else 0,
         )
+        active_pipeline = bundle["trained_models"][model_choice]
 
-    st.sidebar.divider()
-    st.sidebar.markdown("### 🤖 Generative AI Configuration")
-    api_key_input = st.sidebar.text_input(
-        "Gemini API Key (`GEMINI_API_KEY`)",
-        value=os.environ.get("GEMINI_API_KEY", ""),
-        type="password",
-        help="Optional: Enter a Google Gemini API key to invoke live gemini-3.8-flash via the google-genai SDK. When blank, the system uses the built-in RAG-Grounded Local Generative Engine.",
-    )
-    use_live = st.sidebar.checkbox("Enable Live Gemini 3.8 Flash API", value=True)
+        st.divider()
+        st.subheader("Generative AI Engine")
+        api_key_input = st.text_input(
+            "Gemini API Key (Optional):",
+            type="password",
+            placeholder="AIzaSy...",
+            help="Enter key for live Gemini 3.8 Flash generation. Otherwise, the deterministic literature RAG generator is used.",
+        )
+        use_live = st.toggle("Enable Live Gemini API", value=bool(api_key_input or os.environ.get("GEMINI_API_KEY")))
 
-    # Main Header
-    st.title("🎓 Generative AI-Based Personalized Feedback System for Academic Staff Stress-Level Assessment")
-    st.markdown(
-        "**Case Study:** Academic Staff of Akwa Ibom State University, Ikot Akpaden, Nigeria  \n"
-        "*Integrating Pearson Correlation Feature Selection (15 Indicators), Supervised Classifiers "
-        "(`Elastic Net`, `Ridge Logistic Regression`, `Shallow Decision Tree`, `Random Forest` under Stratified 5-Fold CV on $N=110$ Augmented Dataset), "
-        "and Retrieval-Augmented Generative AI (`Gemini 3.8 Flash`) for Personalized Wellbeing Feedback.*"
-    )
+    # -----------------------------------------------------------------------
+    # MAIN HEADER
+    # -----------------------------------------------------------------------
+    st.title("🎓 Academic Staff Stress Assessment & Personalized Feedback System")
 
     tab1, tab2, tab3 = st.tabs([
-        "🩺 1. Stress Assessment & Generative AI Personalized Feedback",
-        "📊 2. Dataset Explorer (Original N=74 & Augmented N=110)",
-        "⚙️ 3. Pearson Feature Selection & Model Evaluation",
+        "🩺 Stress Assessment Test Page (New Data)",
+        "📊 Dataset Explorer",
+        "⚙️ Model Evaluation & Metrics",
     ])
 
     # =======================================================================
-    # TAB 1: INDIVIDUAL STRESS ASSESSMENT & GENERATIVE AI FEEDBACK
+    # TAB 1: NEW DATA STRESS ASSESSMENT TEST PAGE & RESULTS
     # =======================================================================
     with tab1:
-        st.subheader("Stress Assessment Module & Generative AI Personalized Feedback Engine")
-        mode = st.radio(
-            "Select Assessment Input Mode:",
-            [
-                "Select Existing Academic Staff Respondent from Augmented Cohort (`A001` – `A110`)",
-                "Complete Interactive 15-Item Pearson Stress Questionnaire (New Assessment)",
-            ],
-            horizontal=True,
-        )
+        c_ref, c_spacer = st.columns([1.5, 2.5])
+        with c_ref:
+            test_staff_id = st.text_input("Staff Reference ID / Code:", value="TEST_STAFF_01")
 
-        if mode.startswith("Select Existing"):
-            col_sel, col_info = st.columns([1.2, 1.8])
-            with col_sel:
-                staff_options = [
-                    f"{row['staff_code']} — {VALUE_DECODERS['academic_rank'].get(int(row['academic_rank']), 'Rank')} "
-                    f"({'HIGH STRESS [1]' if row['stress_class'] == 1 else 'LOW STRESS [0]'}, TOTAL={row['total_score']})"
-                    for _, row in df_aug.iterrows()
-                ]
-                default_idx = 38 if len(staff_options) > 38 else 0  # Default A039
-                chosen_label = st.selectbox("Choose Staff Code:", staff_options, index=default_idx)
-                chosen_code = chosen_label.split(" — ")[0]
-                staff_row = df_aug[df_aug["staff_code"] == chosen_code].iloc[0].copy()
+        custom_vals = {}
 
-            with col_info:
-                st.info(
-                    f"**Staff Code:** `{staff_row['staff_code']}` | "
-                    f"**Rank:** {VALUE_DECODERS['academic_rank'].get(int(staff_row['academic_rank']), 'Unknown')} | "
-                    f"**Qualification:** {VALUE_DECODERS['educational_qualification'].get(int(staff_row['educational_qualification']), 'Unknown')} | "
-                    f"**Experience:** {VALUE_DECODERS['teaching_experience'].get(int(staff_row['teaching_experience']), 'Unknown')}  \n"
-                    f"**Recorded Composite Score (`TOTAL`):** `{staff_row['total_score']}` | "
-                    f"**Ground-Truth Class (`CLASSES`):** `{'1 (High Stress)' if staff_row['stress_class'] == 1 else '0 (Low Stress)'}`"
-                )
-        else:
-            st.markdown("#### Complete the 15-Item Pearson Academic Staff Stress Questionnaire")
-            custom_vals = {}
-            doms = list(dict.fromkeys([FEATURE_DOMAINS[f] for f in PEARSON_15_FEATURES]))
-            for dom in doms:
-                with st.expander(f"📋 {dom}", expanded=(dom == "Occupational & Institutional Stressors")):
-                    dom_cols = [c for c in PEARSON_15_FEATURES if FEATURE_DOMAINS[c] == dom]
-                    grid_cols = st.columns(2)
-                    for idx_c, f_key in enumerate(dom_cols):
-                        decoder = VALUE_DECODERS.get(f_key, {0: "0", 1: "1", 2: "2", 3: "3", 4: "4"})
-                        options_keys = list(decoder.keys())
-                        default_idx = min(2, len(options_keys) - 1)
-                        with grid_cols[idx_c % 2]:
-                            selected_k = st.selectbox(
-                                FEATURE_LABELS[f_key],
-                                options=options_keys,
-                                format_func=lambda k, d=decoder: f"{k} — {d[k]}",
-                                index=default_idx,
-                                key=f"q_{f_key}",
-                            )
-                            custom_vals[f_key] = int(selected_k)
+        # Category 1: Socio-Demographic & Academic Profile
+        with st.expander("🎓 Socio-Demographic & Academic Profile", expanded=True):
+            dom1_cols = ["academic_rank", "educational_qualification", "teaching_experience", "age", "gender"]
+            c1, c2 = st.columns(2)
+            for idx_c, f_key in enumerate(dom1_cols):
+                f_info = FEATURE_DICTIONARY[f_key]
+                with (c1 if idx_c % 2 == 0 else c2):
+                    chosen_opt = st.selectbox(
+                        f_info["label"],
+                        options=f_info["options"],
+                        index=f_info["options"].index(f_info["default"]) if f_info["default"] in f_info["options"] else 0,
+                        help=f_info["question_text"],
+                        key=f"new_{f_key}",
+                    )
+                    custom_vals[f_key] = encode_feature_value(f_key, chosen_opt)
 
-            # Fill remaining indicators with median for compatibility
-            for c in sheets["sheet3_digitized"].columns:
-                if c not in custom_vals and c not in ["staff_code", "total_score", "stress_class"]:
-                    custom_vals[c] = int(sheets["sheet3_digitized"][c].median())
+        # Category 2: Occupational & Institutional Stressors
+        with st.expander("📚 Occupational & Institutional Stressors", expanded=True):
+            dom2_cols = [
+                "teaching_workload", "research_responsibilities",
+                "administrative_responsibilities", "exam_supervision_marking",
+                "teaching_hours"
+            ]
+            c3, c4 = st.columns(2)
+            for idx_c, f_key in enumerate(dom2_cols):
+                f_info = FEATURE_DICTIONARY[f_key]
+                with (c3 if idx_c % 2 == 0 else c4):
+                    chosen_opt = st.selectbox(
+                        f_info["label"],
+                        options=f_info["options"],
+                        index=f_info["options"].index(f_info["default"]) if f_info["default"] in f_info["options"] else 0,
+                        help=f_info["question_text"],
+                        key=f"new_{f_key}",
+                    )
+                    custom_vals[f_key] = encode_feature_value(f_key, chosen_opt)
 
-            custom_vals["staff_code"] = "NEW_EVAL"
-            custom_vals["total_score"] = sum(custom_vals[c] for c in PEARSON_15_FEATURES)
-            custom_vals["stress_class"] = 1 if custom_vals["total_score"] >= 28 else 0
-            staff_row = pd.Series(custom_vals)
+        # Category 3: Lifestyle, Health & Coping Mechanisms
+        with st.expander("🏃 Lifestyle, Health & Coping Mechanisms", expanded=False):
+            dom3_cols = [
+                "physical_exercise", "physical_exercise_frequency",
+                "break_frequency", "health_problems_affect_coping",
+                "smoking", "alcohol_consumption", "alcohol_frequency"
+            ]
+            c5, c6 = st.columns(2)
+            for idx_c, f_key in enumerate(dom3_cols):
+                f_info = FEATURE_DICTIONARY[f_key]
+                with (c5 if idx_c % 2 == 0 else c6):
+                    chosen_opt = st.selectbox(
+                        f_info["label"],
+                        options=f_info["options"],
+                        index=f_info["options"].index(f_info["default"]) if f_info["default"] in f_info["options"] else 0,
+                        help=f_info["question_text"],
+                        key=f"new_{f_key}",
+                    )
+                    custom_vals[f_key] = encode_feature_value(f_key, chosen_opt)
 
-        # Run Assessment via the selected model
+        # Category 4: Generative AI Adoption & Feedback Preferences
+        with st.expander("🤖 Generative AI Adoption & Feedback Preferences", expanded=False):
+            dom4_cols = [
+                "genai_tool_frequency", "genai_research_teaching_usefulness",
+                "genai_admin_use", "genai_system_trust",
+                "feedback_preference", "feedback_frequency"
+            ]
+            c7, c8 = st.columns(2)
+            for idx_c, f_key in enumerate(dom4_cols):
+                f_info = FEATURE_DICTIONARY[f_key]
+                with (c7 if idx_c % 2 == 0 else c8):
+                    chosen_opt = st.selectbox(
+                        f_info["label"],
+                        options=f_info["options"],
+                        index=f_info["options"].index(f_info["default"]) if f_info["default"] in f_info["options"] else 0,
+                        help=f_info["question_text"],
+                        key=f"new_{f_key}",
+                    )
+                    custom_vals[f_key] = encode_feature_value(f_key, chosen_opt)
+
+        # Build complete test respondent series
+        custom_vals["staff_code"] = test_staff_id.strip() or "TEST_STAFF"
+        custom_vals["total_score"] = sum(custom_vals[c] for c in ALL_23_FEATURE_COLS)
+        custom_vals["stress_class"] = 1 if custom_vals["total_score"] >= 40 else 0
+        staff_row = pd.Series(custom_vals)
+
+        # Execute Model Classification
         explanation = explain_individual_staff(staff_row, active_pipeline, df_aug, features=PEARSON_15_FEATURES)
 
+        st.divider()
+
+        # Results Summary Cards
+        st.subheader("Assessment Results")
         m1, m2, m3, m4 = st.columns(4)
         m1.metric(
             "Assessed Stress Category",
             explanation["predicted_label"],
-            delta="High Priority Coping Intervention" if explanation["predicted_class"] == 1 else "Equilibrium Maintenance",
+            delta="High Priority Intervention" if explanation["predicted_class"] == 1 else "Equilibrium Maintenance",
             delta_color="inverse" if explanation["predicted_class"] == 1 else "normal",
         )
         m2.metric("High-Stress Probability", f"{explanation['probability_high_stress']*100:.1f}%")
@@ -216,14 +221,8 @@ def main():
 
         st.divider()
 
-        # Generative AI Feedback Section (Direct from Classification)
-        st.markdown("### 🤖 Generative AI Personalized Feedback System")
-        st.caption(
-            f"The Generative AI Personalized Feedback Engine directly takes the stress classification result "
-            f"(**{explanation['predicted_label']}** via `{model_choice}`) and individual questionnaire responses, "
-            f"generating tailored, empathetic, and evidence-grounded recommendations for Akwa Ibom State University."
-        )
-
+        # Generative AI Feedback Section
+        st.subheader("🤖 Generative AI Personalized Feedback Report")
         fb_result = generate_personalized_feedback(
             staff_row=staff_row,
             explanation=explanation,
@@ -238,25 +237,56 @@ def main():
             st.dataframe(pd.DataFrame(fb_result["retrieved_evidence"]), use_container_width=True)
 
     # =======================================================================
-    # TAB 2: DATASET EXPLORER
+    # TAB 2: DATASET EXPLORER (HISTORICAL DATA)
     # =======================================================================
     with tab2:
-        st.subheader("Multi-Sheet Dataset Reconciliation & Augmentation")
+        st.subheader("Dataset Reconciliation & Feature Codebook")
         c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Original Cohort (Sheet 3)", len(df3_orig))
+        c1.metric("Original Cohort", len(df3_orig))
         c2.metric("Augmented Cohort (N=110)", len(df_aug))
         c3.metric("Low Stress Staff (Class 0)", f"{(df_aug['stress_class']==0).sum()} (61.8%)")
         c4.metric("High Stress Staff (Class 1)", f"{(df_aug['stress_class']==1).sum()} (38.2%)")
 
-        st.markdown("##### 1. Augmented Academic Staff Dataset ($N=110$)")
-        st.dataframe(df_aug, use_container_width=True, height=260)
+        view_choice = st.radio(
+            "Select View:",
+            [
+                "Augmented Dataset (N=110, Used for Model Training & 5-Fold CV)",
+                "Raw Questionnaire Responses (Sheet 1 Text Responses, N=75)",
+                "Digitized Questionnaire Responses (Sheet 3 Likert Encodings, N=74)",
+                "Feature Codebook & Dictionary (All 23 Indicators, Input Types & Encodings)",
+            ],
+            horizontal=True,
+        )
+
+        if view_choice.startswith("Augmented Dataset"):
+            st.markdown("##### Augmented Academic Staff Dataset ($N=110$)")
+            st.dataframe(df_aug, use_container_width=True, height=280)
+        elif view_choice.startswith("Raw Questionnaire"):
+            st.markdown("##### Sheet 1: Raw Survey Questionnaire Responses (Text Input Types)")
+            st.dataframe(df1_raw, use_container_width=True, height=280)
+        elif view_choice.startswith("Digitized Questionnaire"):
+            st.markdown("##### Sheet 3: Digitized Survey Responses (0–6 Integer Encodings)")
+            st.dataframe(df3_orig, use_container_width=True, height=280)
+        else:
+            st.markdown("##### Feature Codebook & Dictionary: Input Types & Integer Mappings")
+            codebook_rows = []
+            for fk, finfo in FEATURE_DICTIONARY.items():
+                codebook_rows.append({
+                    "Feature Key": fk,
+                    "Label": finfo["label"],
+                    "Domain": finfo["domain"],
+                    "Survey Question Text": finfo["question_text"],
+                    "Allowed Text Options (Input Types)": " | ".join(finfo["options"]),
+                    "Integer Encodings": ", ".join(f"{k}→{v}" for k, v in finfo["decoder"].items()),
+                })
+            st.dataframe(pd.DataFrame(codebook_rows), use_container_width=True, height=350)
 
         col_s4, col_s5 = st.columns([1.2, 1])
         with col_s4:
-            st.markdown("##### 2. Sheet 4 (`transpose`): Staff-by-Attribute Matrix")
+            st.markdown("##### Sheet 4 (`transpose`): Staff-by-Attribute Matrix")
             st.dataframe(df4, use_container_width=True, height=300)
         with col_s5:
-            st.markdown("##### 3. Sheet 5 (`attributes responses`): Cumulative Domain Burden")
+            st.markdown("##### Sheet 5 (`attributes responses`): Cumulative Domain Burden")
             st.dataframe(df5[["feature_label", "domain", "Responses", "mean_score_per_staff"]].sort_values("Responses", ascending=False), use_container_width=True, height=300)
 
         st.divider()
@@ -272,15 +302,10 @@ def main():
                 st.image(str(FIGURES_DIR / "fig3_sheet4_transpose_heatmap.png"), caption="Figure 3: Respondent Profile Heatmap Ordered by Stress Class")
 
     # =======================================================================
-    # TAB 3: PEARSON FEATURE SELECTION & MODEL EVALUATION
+    # TAB 3: MODEL EVALUATION & METRICS
     # =======================================================================
     with tab3:
-        st.subheader("Pearson Correlation Feature Selection & Stratified 5-Fold Cross-Validation")
-        st.markdown(
-            "Features were screened using bivariate Pearson product-moment correlation analysis ($|r| \\ge 0.30, p < 0.01$). "
-            "The four specified classifiers (**Elastic Net**, **Ridge Logistic Regression**, **Shallow Decision Tree**, **Random Forest**) "
-            "were then trained and cross-validated using **Stratified 5-Fold CV** on the augmented $N=110$ dataset."
-        )
+        st.subheader("Pearson Feature Selection & Stratified 5-Fold Cross-Validation Metrics")
 
         comp_path = TABLES_DIR / "model_performance_comparison.csv"
         if comp_path.exists():
