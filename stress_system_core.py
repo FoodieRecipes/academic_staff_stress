@@ -62,7 +62,8 @@ TABLES_DIR = OUTPUT_DIR / "tables"
 for _d in (OUTPUT_DIR, FIGURES_DIR, MODELS_DIR, TABLES_DIR):
     _d.mkdir(parents=True, exist_ok=True)
 
-AUGMENTED_DATA_PATH = TABLES_DIR / "academic_staff_stress_augmented_110.csv"
+DATASET_PATH = TABLES_DIR / "academic_staff_stress_dataset.csv"
+AUGMENTED_DATA_PATH = DATASET_PATH
 
 COLUMN_RENAME_MAP: Dict[str, str] = {
     "Staff code": "staff_code",
@@ -993,7 +994,6 @@ def explain_individual_staff(
 
 RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
     "teaching_experience": {
-        "citation": "Kovács et al. (2024); Ajirioghene (2024)",
         "domain": "Socio-Demographic & Academic Profile",
         "high_risk_guidance": (
             "Long-serving academic staff frequently experience cumulative career fatigue ('burnout creep') "
@@ -1005,7 +1005,6 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "academic_rank": {
-        "citation": "Eleje et al. (2025); Akah et al. (2022)",
         "domain": "Socio-Demographic & Academic Profile",
         "high_risk_guidance": (
             "Senior academic cadres (Senior Lecturer, Associate Professor, Professor) often carry compounded "
@@ -1018,7 +1017,6 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "age": {
-        "citation": "Abraham et al. (2025); Kovács et al. (2025)",
         "domain": "Socio-Demographic & Academic Profile",
         "high_risk_guidance": (
             "Senior lecturers face heightened physiological vulnerability to chronic fatigue. Incorporate "
@@ -1029,13 +1027,12 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "research_responsibilities": {
-        "citation": "Shi et al. (2025); Delgado Vela (2025); Baig & Yadegaridehkordi (2025)",
         "domain": "Occupational & Institutional Stressors",
         "high_risk_guidance": (
             "Protect 2–3 dedicated, uninterrupted 90-minute 'deep research blocks' per week on your calendar "
             "rather than fragmenting writing across evenings. Form collaborative co-authorship clusters within "
-            "your faculty at AKSU to share literature synthesis and data analysis workloads, and use Gen-AI "
-            "research assistants ethically for literature discovery and manuscript structuring."
+            "your faculty at AKSU to share research reading and data analysis workloads, and use Gen-AI "
+            "research assistants ethically for academic source discovery and manuscript structuring."
         ),
         "maintenance_guidance": (
             "Your research responsibilities are balanced. Maintain steady writing habits and collaborative "
@@ -1043,7 +1040,6 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "teaching_workload": {
-        "citation": "Akah et al. (2022); Kovács et al. (2024)",
         "domain": "Occupational & Institutional Stressors",
         "high_risk_guidance": (
             "Modularize lecture preparation by breaking course delivery into reusable weekly blocks, "
@@ -1057,12 +1053,11 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "genai_tool_frequency": {
-        "citation": "Zaim et al. (2026); Baig & Yadegaridehkordi (2025); Eleje et al. (2025)",
         "domain": "Technological & Gen-AI Adoption Factors",
         "high_risk_guidance": (
             "Balanced, purposeful adoption of Gen-AI tools can reduce repetitive teaching preparation and "
             "administrative drafting load, whereas unguided or anxious tool use can add cognitive overhead "
-            "(Zaim et al., 2026). Focus on 1–2 reliable workflows (e.g., lesson plan structuring and memo "
+            "Focus on 1–2 reliable workflows (e.g., lesson plan structuring and memo "
             "summarization) while always verifying outputs to avoid accuracy anxiety."
         ),
         "maintenance_guidance": (
@@ -1070,7 +1065,6 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "genai_admin_use": {
-        "citation": "Baig & Yadegaridehkordi (2025); Eleje et al. (2025)",
         "domain": "Technological & Gen-AI Adoption Factors",
         "high_risk_guidance": (
             "Using Gen-AI selectively for repetitive administrative drafting (committee reports, routine memos, "
@@ -1081,11 +1075,10 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "health_problems_affect_coping": {
-        "citation": "Ejemot-Nwadiaro et al. (2026); Abraham et al. (2025)",
         "domain": "Behavioural, Lifestyle & Physiological Indicators",
         "high_risk_guidance": (
             "Self-reported health challenges affecting job coping are strongly linked in Nigerian university "
-            "studies (Ejemot-Nwadiaro et al., 2026) to hypertension and burnout risk. Prioritize routine blood "
+            "studies to hypertension and burnout risk. Prioritize routine blood "
             "pressure and preventive medical checks at the Akwa Ibom State University Medical Centre, avoid "
             "sacrificing sleep for grading, and seek confidential medical or occupational wellness consultation early."
         ),
@@ -1095,7 +1088,6 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "feedback_frequency": {
-        "citation": "Song et al. (2024); Ozolcer & Bae (2025)",
         "domain": "Technological & Gen-AI Adoption Factors",
         "high_risk_guidance": (
             "Regular, scheduled feedback check-ins allow early detection of acute stress spikes before they "
@@ -1106,7 +1098,6 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "educational_qualification": {
-        "citation": "Akah et al. (2022); Eleje et al. (2025)",
         "domain": "Socio-Demographic & Academic Profile",
         "high_risk_guidance": (
             "Doctorate-level expectations for grant generation, postgraduate supervision, and journal editing "
@@ -1117,10 +1108,9 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "genai_research_teaching_usefulness": {
-        "citation": "Baig & Yadegaridehkordi (2025); Zaim et al. (2026)",
         "domain": "Technological & Gen-AI Adoption Factors",
         "high_risk_guidance": (
-            "Continue leveraging verified AI prompts for course syllabus restructuring and literature indexing "
+            "Continue leveraging verified AI prompts for course syllabus restructuring and academic source indexing "
             "to maximize your instructional time efficiency."
         ),
         "maintenance_guidance": (
@@ -1128,7 +1118,6 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "exam_supervision_marking": {
-        "citation": "Akah et al. (2022); Shi et al. (2025)",
         "domain": "Occupational & Institutional Stressors",
         "high_risk_guidance": (
             "High examination invigilation and script-marking volume is a major acute stressor. Adopt "
@@ -1141,11 +1130,10 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "alcohol_frequency": {
-        "citation": "Ejemot-Nwadiaro et al. (2026)",
         "domain": "Behavioural, Lifestyle & Physiological Indicators",
         "high_risk_guidance": (
-            "Ejemot-Nwadiaro et al. (2026) identified lifestyle coping behaviours including alcohol frequency "
-            "as significantly associated with workplace stress outcomes among Nigerian lecturers. Replace "
+            "Lifestyle coping behaviours including alcohol frequency "
+            "are significantly associated with workplace stress outcomes among university lecturers. Replace "
             "evening alcohol-based unwinding with non-pharmacological decompression such as progressive "
             "muscle relaxation, herbal teas, or evening walks."
         ),
@@ -1154,7 +1142,6 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "feedback_preference": {
-        "citation": "Song et al. (2024); Salemi et al. (2024)",
         "domain": "Technological & Gen-AI Adoption Factors",
         "high_risk_guidance": (
             "Your preference for personalized assessment ensures that guidance remains relevant to your specific "
@@ -1165,7 +1152,6 @@ RAG_KNOWLEDGE_BASE: Dict[str, Dict[str, str]] = {
         ),
     },
     "break_frequency": {
-        "citation": "Ajirioghene (2024); Ozolcer & Bae (2025)",
         "domain": "Behavioural, Lifestyle & Physiological Indicators",
         "high_risk_guidance": (
             "Working through the day without micro-breaks accelerates autonomic fatigue. Implement the "
@@ -1196,7 +1182,6 @@ def retrieve_rag_evidence(explanation: Dict[str, Any]) -> List[Dict[str, str]]:
                 "feature_label": item["feature_label"],
                 "staff_response": item["decoded_response"],
                 "shap_impact": f"+{item['shap_value']:.4f}",
-                "citation": kb["citation"],
                 "domain": kb["domain"],
                 "recommended_action": kb["high_risk_guidance"],
             })
@@ -1211,7 +1196,6 @@ def retrieve_rag_evidence(explanation: Dict[str, Any]) -> List[Dict[str, str]]:
                 "feature_label": item["feature_label"],
                 "staff_response": item["decoded_response"],
                 "shap_impact": f"{item['shap_value']:.4f}",
-                "citation": kb["citation"],
                 "domain": kb["domain"],
                 "recommended_action": kb["maintenance_guidance"],
             })
@@ -1285,7 +1269,7 @@ def build_deterministic_rag_feedback(
         "",
         "---",
         "",
-        "#### 2. Evidence-Grounded Personalized Action Plan (RAG-Guided)",
+        "#### 2. Personalized Action Plan & Coping Recommendations",
     ])
 
     if explanation["predicted_class"] == 1:
@@ -1300,8 +1284,7 @@ def build_deterministic_rag_feedback(
 
     for idx, doc in enumerate(retrieved_docs[:4], 1):
         lines.append(
-            f"{idx}. **{doc['feature_label']}** *(Current Response: `{doc['staff_response']}` | "
-            f"Evidence Base: {doc['citation']})*:  \n"
+            f"{idx}. **{doc['feature_label']}** *(Current Response: `{doc['staff_response']}`)*:  \n"
             f"   {doc['recommended_action']}"
         )
 
@@ -1312,9 +1295,9 @@ def build_deterministic_rag_feedback(
         "#### 3. Weekly Micro-Habit & Adaptation Schedule",
         f"- **Scheduled Check-In:** Aligned with your stated preference (**{pref_freq}**), re-assess your workload "
         "and recovery indicators after implementing the top two adjustments above.",
-        "- **Institutional & Confidential Support:** Occupational stress arises from a demand–resource "
-        "imbalance (Kovács et al., 2024; Ejemot-Nwadiaro et al., 2026). Where administrative or teaching loads "
-        "exceed departmental norms, use this objective assessment summary to discuss workload balancing with your "
+        "- **Institutional & Confidential Support:** Occupational stress arises from an imbalance "
+        "between demanding duties and available coping resources. Where administrative or teaching loads "
+        "exceed standard departmental norms, use this assessment summary to discuss workload balancing with your "
         "Head of Department or consult the AKSU Medical & Counselling Unit.",
     ])
 
@@ -1340,7 +1323,7 @@ def generate_personalized_feedback(
     if not use_live_gemini or not resolved_key:
         return {
             "feedback_text": fallback_text,
-            "generation_mode": "RAG-Grounded Generative Engine (Set GEMINI_API_KEY for live Gemini 3.8 Flash API)",
+            "generation_mode": "Generative AI Personalized Feedback Engine (Deterministic Synthesis)",
             "retrieved_evidence": retrieved_docs,
         }
 
@@ -1356,13 +1339,12 @@ def generate_personalized_feedback(
         trust_str = VALUE_DECODERS["genai_system_trust"].get(int(staff_row["genai_system_trust"]), "Not sure")
 
         system_instruction = (
-            "You are an empathetic, evidence-grounded Occupational Wellbeing and Stress Management Specialist "
+            "You are an empathetic, professional Occupational Wellbeing and Stress Management Specialist "
             "for Academic Staff at Akwa Ibom State University (AKSU), Ikot Akpaden, Nigeria. "
-            "Your role is to translate a machine learning stress-level assessment and its feature attributions "
+            "Your role is to translate a machine learning stress-level assessment and individual questionnaire responses "
             "into clear, respectful, non-judgmental, and actionable personalized feedback. "
-            "Always ground your advice in the provided factor contributions and retrieved literature evidence "
-            "(Akah et al., 2022; Ejemot-Nwadiaro et al., 2026; Kovács et al., 2024, 2025; Zaim et al., 2026). "
-            "Never give generic one-size-fits-all advice; explicitly reference the lecturer's actual responses."
+            "Do not cite any literature, authors, or paper publications in the output text. "
+            "Provide practical, high-impact coping strategies tailored specifically to the lecturer's reported workload, schedule, and wellbeing profile."
         )
 
         prompt_payload = f"""
@@ -1382,13 +1364,13 @@ Generate a comprehensive, personalized stress-management feedback report for Aca
 ### 3. Top Protective / Stabilizing Factors (Pushing Toward Low Stress)
 {json.dumps(explanation['protective_buffers'][:3], indent=2)}
 
-### 4. Retrieved Evidence-Based Interventions (RAG Context)
+### 4. Tailored Coping Strategies & Intervention Guidelines
 {json.dumps(retrieved_docs, indent=2)}
 
 Please structure your response in clean Markdown with:
 1. **Personalized Assessment Summary & Empathy Statement** (tailored to whether they are in HIGH STRESS or LOW STRESS and acknowledging their Gen-AI trust level).
 2. **What Is Driving Your Stress Profile (Explanation in Plain Language)**.
-3. **Actionable, Evidence-Grounded Recommendations for Akwa Ibom State University Context** (specific steps for teaching, research, administration, workday breaks, and health coping).
+3. **Actionable Recommendations for Akwa Ibom State University Context** (specific steps for teaching, research, administration, workday breaks, and health coping, without citing any literature or papers).
 4. **Follow-Up & Adaptation Plan** (aligned with their preferred feedback schedule of `{pref_freq}`).
 """
 
@@ -1401,18 +1383,18 @@ Please structure your response in clean Markdown with:
         if interaction.output_text:
             return {
                 "feedback_text": interaction.output_text,
-                "generation_mode": "Live Gemini API (gemini-3.8-flash via google-genai Interactions API)",
+                "generation_mode": "Live Gemini 3.8 Flash Engine",
                 "retrieved_evidence": retrieved_docs,
             }
     except Exception as exc:
         return {
             "feedback_text": fallback_text,
-            "generation_mode": f"RAG-Grounded Generative Engine (Gemini API fallback: {type(exc).__name__})",
+            "generation_mode": f"Generative AI Personalized Feedback Engine (Fallback: {type(exc).__name__})",
             "retrieved_evidence": retrieved_docs,
         }
 
     return {
         "feedback_text": fallback_text,
-        "generation_mode": "RAG-Grounded Generative Engine",
+        "generation_mode": "Generative AI Personalized Feedback Engine",
         "retrieved_evidence": retrieved_docs,
     }

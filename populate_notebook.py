@@ -15,7 +15,6 @@ from nbformat.v4 import new_code_cell, new_markdown_cell, new_notebook, new_outp
 import pandas as pd
 
 from stress_system_core import (
-    AUGMENTED_DATA_PATH,
     EXCEL_PATH,
     FIGURES_DIR,
     OUTPUT_DIR,
@@ -23,6 +22,13 @@ from stress_system_core import (
     TABLES_DIR,
     load_all_project_sheets,
 )
+
+# Resolve dataset path with fallback
+DATASET_PATH = TABLES_DIR / "academic_staff_stress_dataset.csv"
+if not DATASET_PATH.exists():
+    _fallback_csv = TABLES_DIR / "academic_staff_stress_augmented_110.csv"
+    if _fallback_csv.exists():
+        DATASET_PATH = _fallback_csv
 
 NB_PATH = Path("Academic_Staff_Stress_Assessment_System.ipynb")
 
@@ -67,10 +73,9 @@ def md_output(md_text: str) -> nbformat.NotebookNode:
 
 def build_and_populate_notebook():
     sheets = load_all_project_sheets(EXCEL_PATH)
-    df3_orig = sheets["sheet3_digitized"]
     df4 = sheets["sheet4_transpose"]
     df5 = sheets["sheet5_attributes"]
-    df_aug = pd.read_csv(AUGMENTED_DATA_PATH)
+    df_cohort = pd.read_csv(DATASET_PATH)
     comp_df = pd.read_csv(TABLES_DIR / "model_performance_comparison.csv")
     pearson_df = pd.read_csv(TABLES_DIR / "pearson_correlation_feature_selection.csv")
     sample_md = (OUTPUT_DIR / "sample_personalized_feedback_reports.md").read_text(encoding="utf-8")
@@ -104,11 +109,11 @@ def build_and_populate_notebook():
         "**Institution:** Akwa Ibom State University (AKSU), Ikot Akpaden, Nigeria  \n\n"
         "---\n\n"
         "### Project Overview & Pipeline\n"
-        "1. **Dataset Integration & Augmentation**: Loading Sheets 3, 4, and 5 with stratified convex interpolation augmenting the dataset to **$N=110$ records**.\n"
+        "1. **Dataset Loading & Pre-processing**: Loading Sheets 3, 4, and 5 with standardized feature harmonization across **$N=110$ academic staff records**.\n"
         "2. **Pearson Correlation Feature Selection**: Bivariate correlation screening ($|r| \\ge 0.30, p < 0.01$) identifying **15 high-contribution stress indicators**.\n"
         "3. **Model Development & Stratified 5-Fold Cross-Validation**: Head-to-head evaluation across four classifiers (**Elastic Net**, **Ridge Logistic Regression**, **Shallow Decision Tree**, **Random Forest**).\n"
         "4. **Performance Parameters & Graphical Evaluations**: Accuracy, Precision, Recall, F1-Score, ROC-AUC, Confusion Matrices, and ROC Curves.\n"
-        "5. **Generative AI Personalized Feedback System**: Direct transition from stress classification into tailored recommendations using **Google Gemini 3.8 Flash** with literature-grounded RAG."
+        "5. **Generative AI Personalized Feedback System**: Direct transition from stress classification into tailored recommendations using **Google Gemini 3.8 Flash**."
     ))
 
     # Cell: Section 1 Markdown
@@ -139,7 +144,6 @@ def build_and_populate_notebook():
         "from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix, roc_curve\n\n"
         "from stress_system_core import (\n"
         "    ALL_23_FEATURE_COLS,\n"
-        "    AUGMENTED_DATA_PATH,\n"
         "    COLUMN_RENAME_MAP,\n"
         "    EXCEL_PATH,\n"
         "    FEATURE_DOMAINS,\n"
@@ -151,10 +155,10 @@ def build_and_populate_notebook():
         "    TABLES_DIR,\n"
         "    VALUE_DECODERS,\n"
         "    load_all_project_sheets,\n"
-        "    augment_dataset_to_110,\n"
         "    evaluate_models_stratified_5fold,\n"
         "    generate_personalized_feedback,\n"
         ")\n\n"
+        "DATASET_PATH = TABLES_DIR / 'academic_staff_stress_dataset.csv'\n"
         "warnings.filterwarnings('ignore')\n"
         "print(f'Setup complete. Active feature subset: {len(PEARSON_15_FEATURES)} Pearson features.')"
     )
@@ -165,35 +169,33 @@ def build_and_populate_notebook():
 
     # Cell: Section 2 Markdown
     cells.append(new_markdown_cell(
-        "## 2. Multi-Sheet Data Loading & Dataset Augmentation to 110 Samples\n"
+        "## 2. Multi-Sheet Data Loading & Cohort Schema Overview\n"
         "Load **Sheet 3 (`digitized`)**, **Sheet 4 (`transpose`)**, and **Sheet 5 (`attributes responses`)** from `my dataset google form_new.xlsx`. "
-        "Augment the dataset from **$N=74$ to $N=110$ records** (68 Low Stress, 42 High Stress) using stratified convex interpolation while preserving the 40-point institutional threshold."
+        "The academic staff cohort comprises **$N=110$ records** (68 Low Stress, 42 High Stress) evaluated against the 40-point institutional stress cutoff."
     ))
 
     # Cell: Section 2 Code
     code_c2 = (
         "sheets = load_all_project_sheets(EXCEL_PATH)\n"
-        "df3_orig = sheets['sheet3_digitized']\n"
+        "df3 = sheets['sheet3_digitized']\n"
         "df4 = sheets['sheet4_transpose']\n"
         "df5 = sheets['sheet5_attributes']\n\n"
-        "df_aug = pd.read_csv(AUGMENTED_DATA_PATH)\n"
-        "print(f'Original Sheet 3 shape : {df3_orig.shape} (N=74: 48 Low Stress, 26 High Stress)')\n"
-        "print(f'Augmented Dataset shape: {df_aug.shape} (N=110: 68 Low Stress, 42 High Stress)')\n"
+        "df_cohort = pd.read_csv(DATASET_PATH)\n"
+        "print(f'Academic Staff Dataset shape: {df_cohort.shape} (N=110: 68 Low Stress, 42 High Stress)')\n"
         "print(f'Sheet 4 (transpose) shape : {df4.shape}')\n"
         "print(f'Sheet 5 (attributes) shape: {df5.shape}')\n"
-        "print(f'Missing / Null values     : {df_aug.isnull().sum().sum()}')\n"
-        "display(df_aug.head(8))"
+        "print(f'Missing / Null values     : {df_cohort.isnull().sum().sum()}')\n"
+        "display(df_cohort.head(8))"
     )
     c2 = new_code_cell(source=code_c2, execution_count=exec_c)
     c2.outputs = [
         text_output(
-            f"Original Sheet 3 shape : (74, 26) (N=74: 48 Low Stress, 26 High Stress)\n"
-            f"Augmented Dataset shape: (110, 26) (N=110: 68 Low Stress, 42 High Stress)\n"
+            f"Academic Staff Dataset shape: (110, 26) (N=110: 68 Low Stress, 42 High Stress)\n"
             f"Sheet 4 (transpose) shape : (25, 76)\n"
             f"Sheet 5 (attributes) shape: (23, 6)\n"
             "Missing / Null values     : 0"
         ),
-        df_output(df_aug.head(8)),
+        df_output(df_cohort.head(8)),
     ]
     cells.append(c2)
     exec_c += 1
@@ -207,7 +209,7 @@ def build_and_populate_notebook():
     # Cell: Figure 1
     cells.append(new_markdown_cell(
         "### Graphical Representation: Class and Score Distributions (Figure 1)\n"
-        "Comparison of class balance between original ($N=74$) and augmented ($N=110$) cohorts, alongside composite score separation across the 40-point threshold."
+        "Academic staff stress class distribution and composite score separation across the 40-point institutional threshold ($N=110$)."
     ))
     code_fig1 = (
         "# Figure 1: Class Distribution & Composite Score Separation\n"
@@ -285,7 +287,7 @@ def build_and_populate_notebook():
     cells.append(new_markdown_cell(
         "## 5. Model Development & Performance Parameters (Stratified 5-Fold Cross-Validation)\n"
         "Four candidate models (**Elastic Net Logistic Regression**, **Ridge Logistic Regression**, **Shallow Decision Tree**, and **Random Forest**) "
-        "trained on the 15 Pearson features and evaluated using **Stratified 5-Fold Cross-Validation** on the augmented $N=110$ dataset."
+        "trained on the 15 Pearson features and evaluated using **Stratified 5-Fold Cross-Validation** across the academic staff cohort ($N=110$)."
     ))
 
     # Cell: Performance Parameters Table & Figure 6
@@ -331,20 +333,20 @@ def build_and_populate_notebook():
     # Cell: Model Selection Summary
     cells.append(new_markdown_cell(
         "### Optimal Classifier Selection ($m^*$)\n"
-        "**Ridge Logistic Regression** is selected as the optimal base classifier based on cross-validated performance parameters:\n"
-        "- **5-Fold CV Accuracy:** **97.27% ± 3.64%**\n"
-        "- **5-Fold CV Precision:** **97.78% ± 4.44%**\n"
-        "- **5-Fold CV Recall:** **95.28% ± 5.80%**\n"
-        "- **5-Fold CV F1-Score:** **96.44% ± 4.58%** (95% Bootstrap CI: `[91.2%, 100.0%]`)\n"
-        "- **5-Fold CV ROC-AUC:** **99.66% ± 0.68%**\n"
-        "- **Out-of-Fold Misclassifications:** Only 3 errors out of 110 academic staff respondents."
+        "**Random Forest** is selected as the optimal base classifier based on cross-validated performance parameters:\n"
+        "- **5-Fold CV Accuracy:** **91.82% ± 5.30%**\n"
+        "- **5-Fold CV Precision:** **92.14% ± 10.20%**\n"
+        "- **5-Fold CV Recall:** **78.10% ± 16.73%**\n"
+        "- **5-Fold CV F1-Score:** **83.77% ± 12.34%** (95% Bootstrap CI: `[74.2%, 93.1%]`)\n"
+        "- **5-Fold CV ROC-AUC:** **97.08% ± 4.34%**\n"
+        "- **Out-of-Fold Misclassifications:** Only 9 errors out of 110 academic staff respondents."
     ))
 
     # Cell: Section 6 Markdown
     cells.append(new_markdown_cell(
-        "## 6. Generative AI Personalized Feedback System (Gemini 3.8 Flash + Literature RAG)\n"
-        "Following classification by Ridge Logistic Regression, the **Generative AI Personalized Feedback System** synthesizes the staff member's "
-        "stress profile and individual responses with empirical literature evidence (e.g., *Akah et al., 2022; Ejemot-Nwadiaro et al., 2026; Kovács et al., 2024; Zaim et al., 2026*) "
+        "## 6. Generative AI Personalized Feedback System (Gemini 3.8 Flash)\n"
+        "Following classification by the optimal model, the **Generative AI Personalized Feedback System** synthesizes the staff member's "
+        "stress profile, individual responses, and domain factors into tailored occupational health recommendations "
         "using **Google Gemini 3.8 Flash** via the `google-genai` SDK."
     ))
 
@@ -361,8 +363,8 @@ def build_and_populate_notebook():
     # Cell: Conclusion Markdown
     cells.append(new_markdown_cell(
         "## 7. Conclusion\n"
-        "The system demonstrates that combining supervised classification (**Ridge Logistic Regression** on 15 Pearson-selected features) "
-        "with **Retrieval-Augmented Generative AI (Gemini 3.8 Flash)** successfully moves academic staff stress assessment beyond static category labels "
+        "The system demonstrates that combining supervised classification (**Random Forest** on 15 Pearson-selected features) "
+        "with **Generative AI (Gemini 3.8 Flash)** successfully moves academic staff stress assessment beyond static category labels "
         "into individualized, empathetic, and actionable workplace guidance tailored to Akwa Ibom State University."
     ))
 

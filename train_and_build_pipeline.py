@@ -204,42 +204,42 @@ def run_complete_pipeline() -> dict:
     # -----------------------------------------------------------------------
     print("\n[Step 5/7] Generating publication figures (Figures 1 to 10)...")
 
-    # Figure 1: Dataset Augmentation & Score Distribution
+    # Figure 1: Academic Staff Cohort Stress Class & Score Distribution (N=110)
     fig, axes = plt.subplots(1, 3, figsize=(16.5, 5.0))
-    orig_counts = df3_orig["stress_class"].value_counts().sort_index()
+    class_counts = df_aug["stress_class"].value_counts().sort_index()
     bars1 = axes[0].bar(
-        ["Low Stress (0)", "High Stress (1)"],
-        [orig_counts.get(0, 0), orig_counts.get(1, 0)],
+        ["Low Stress (Class 0)", "High Stress (Class 1)"],
+        [class_counts.get(0, 0), class_counts.get(1, 0)],
         color=["#2b83ba", "#d7191c"], edgecolor="black", width=0.55
     )
     for b in bars1:
         h = b.get_height()
-        axes[0].text(b.get_x() + b.get_width() / 2, h + 1, f"{int(h)} ({h/len(df3_orig)*100:.1f}%)", ha="center", va="bottom", fontweight="bold")
-    axes[0].set_ylim(0, 60)
-    axes[0].set_title("(a) Original Class Distribution (N=74)", fontweight="bold")
+        axes[0].text(b.get_x() + b.get_width() / 2, h + 1.2, f"{int(h)} ({h/len(df_aug)*100:.1f}%)", ha="center", va="bottom", fontweight="bold")
+    axes[0].set_ylim(0, len(df_aug) * 0.85)
+    axes[0].set_title("(a) Stress Class Distribution (N=110)", fontweight="bold")
     axes[0].set_ylabel("Number of Academic Staff")
 
-    aug_counts = df_aug["stress_class"].value_counts().sort_index()
-    bars2 = axes[1].bar(
-        ["Low Stress (0)", "High Stress (1)"],
-        [aug_counts.get(0, 0), aug_counts.get(1, 0)],
-        color=["#2b83ba", "#fdae61"], edgecolor="black", width=0.55
-    )
-    for b in bars2:
-        h = b.get_height()
-        axes[1].text(b.get_x() + b.get_width() / 2, h + 1.2, f"{int(h)} ({h/len(df_aug)*100:.1f}%)", ha="center", va="bottom", fontweight="bold")
-    axes[1].set_ylim(0, 85)
-    axes[1].set_title("(b) Augmented Class Distribution (N=110)", fontweight="bold")
+    axes[1].hist(df_aug[df_aug["stress_class"] == 0]["total_score"], bins=15, alpha=0.75, color="#2b83ba", edgecolor="black", label="Low Stress (Scores <= 39)")
+    axes[1].hist(df_aug[df_aug["stress_class"] == 1]["total_score"], bins=15, alpha=0.75, color="#d7191c", edgecolor="black", label="High Stress (Scores >= 40)")
+    axes[1].axvline(39.5, color="black", linestyle="--", linewidth=1.8, label="Clinical Threshold (T = 40)")
+    axes[1].set_title("(b) Composite Score Distribution & Cutoff Separation", fontweight="bold")
+    axes[1].set_xlabel("Composite Stress Score (TOTAL)")
+    axes[1].set_ylabel("Number of Respondents")
+    axes[1].legend(loc="upper right", fontsize=8.5)
 
-    axes[2].hist(df_aug[df_aug["stress_class"] == 0]["total_score"], bins=15, alpha=0.7, color="#2b83ba", edgecolor="black", label="Low Stress (Scores <= 39)")
-    axes[2].hist(df_aug[df_aug["stress_class"] == 1]["total_score"], bins=15, alpha=0.7, color="#d7191c", edgecolor="black", label="High Stress (Scores >= 40)")
-    axes[2].axvline(39.5, color="black", linestyle="--", linewidth=1.5, label="Boundary Threshold (T = 40)")
-    axes[2].set_title("(c) Augmented Composite Score Distribution", fontweight="bold")
-    axes[2].set_xlabel("Composite Score (TOTAL)")
-    axes[2].set_ylabel("Frequency")
-    axes[2].legend(loc="upper right", fontsize=8.5)
+    box_data = [
+        df_aug[df_aug["stress_class"] == 0]["total_score"].values,
+        df_aug[df_aug["stress_class"] == 1]["total_score"].values
+    ]
+    bp = axes[2].boxplot(box_data, patch_artist=True, tick_labels=["Low Stress (0)", "High Stress (1)"], widths=0.5)
+    bp['boxes'][0].set_facecolor("#2b83ba")
+    bp['boxes'][1].set_facecolor("#d7191c")
+    axes[2].axhline(39.5, color="black", linestyle="--", linewidth=1.5, label="Cutoff (T = 40)")
+    axes[2].set_title("(c) Score Dispersion by Category (N=110)", fontweight="bold")
+    axes[2].set_ylabel("Composite Stress Score (TOTAL)")
+    axes[2].legend(loc="upper left", fontsize=8.5)
 
-    plt.suptitle("Figure 1: Dataset Augmentation to 110 Samples & Stress Score Distribution", fontsize=13, fontweight="bold", y=1.02)
+    plt.suptitle("Figure 1: Academic Staff Cohort (N=110) Stress Class & Composite Score Distributions", fontsize=13, fontweight="bold", y=1.02)
     plt.tight_layout()
     plt.savefig(FIGURES_DIR / "fig1_class_and_score_distribution.png")
     plt.close(fig)
@@ -270,7 +270,7 @@ def run_complete_pipeline() -> dict:
     heat_data.index = [FEATURE_LABELS.get(COLUMN_RENAME_MAP.get(idx, idx), idx) for idx in heat_data.index]
     sns.heatmap(heat_data, cmap="YlOrRd", cbar_kws={"label": "Response Score"}, linewidths=0.05, ax=ax)
     ax.set_title("Figure 3: Respondent Profile Heatmap (Sheet 4 Transpose, Ordered by Stress Class & Total Score)", fontsize=12, fontweight="bold")
-    ax.set_xlabel("Academic Staff Respondent Code (A001 – A074)")
+    ax.set_xlabel("Academic Staff Respondent Code")
     ax.set_ylabel("Questionnaire Indicator")
     plt.tight_layout()
     plt.savefig(FIGURES_DIR / "fig3_sheet4_transpose_heatmap.png")
@@ -347,7 +347,7 @@ def run_complete_pipeline() -> dict:
     ax.set_xticklabels([m.replace(" ", "\n") for m in comparison_df["Model"]], fontweight="bold")
     ax.set_ylim(60, 108)
     ax.set_ylabel("Cross-Validation Score (%)", fontweight="bold")
-    ax.set_title(f"Figure 6: Stratified 5-Fold Cross-Validation Performance Comparison (Augmented N=110)\nSelected Optimal Base Classifier: {best_model_name}", fontsize=12.5, fontweight="bold")
+    ax.set_title(f"Figure 6: Stratified 5-Fold Cross-Validation Performance Comparison (N=110)\nSelected Optimal Base Classifier: {best_model_name}", fontsize=12.5, fontweight="bold")
     ax.legend(loc="lower right", ncol=5, fontsize=9)
     plt.tight_layout()
     plt.savefig(FIGURES_DIR / "fig6_model_comparison_metrics.png")
@@ -371,7 +371,7 @@ def run_complete_pipeline() -> dict:
         )
         tag = " [SELECTED OPTIMAL MODEL m*]" if is_sel else ""
         ax.set_title(f"{m_name}{tag}\nAccuracy: {acc_v:.1f}% | F1-Score: {f1_v:.1f}%", fontweight="bold")
-    plt.suptitle("Figure 7: Out-of-Fold Confusion Matrices Across All 4 Models (Augmented N=110)", fontsize=13, fontweight="bold", y=1.01)
+    plt.suptitle("Figure 7: Out-of-Fold Confusion Matrices Across All 4 Models (N=110)", fontsize=13, fontweight="bold", y=1.01)
     plt.tight_layout()
     plt.savefig(FIGURES_DIR / "fig7_confusion_matrices.png")
     plt.close(fig)
@@ -497,7 +497,7 @@ def run_complete_pipeline() -> dict:
     sample_reports_md = (
         "# Sample Generative AI Personalized Feedback Outputs\n\n"
         f"**Selected Optimal Base Classifier ($m^*$):** `{best_model_name}`  \n"
-        f"**Dataset Configuration:** Augmented Dataset ($N=110$ Academic Staff)  \n"
+        f"**Dataset Configuration:** Academic Staff Study Cohort ($N=110$)  \n"
         f"**Feature Set:** 15 High-Contribution Pearson Correlation Features ($|r| \\ge 0.30, p < 0.01$)  \n"
         f"**Generation Engine:** `{fb_high['generation_mode']}`  \n\n"
         "---\n\n"

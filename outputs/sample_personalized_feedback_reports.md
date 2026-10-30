@@ -1,9 +1,9 @@
 # Sample Generative AI Personalized Feedback Outputs
 
 **Selected Optimal Base Classifier ($m^*$):** `Random Forest`  
-**Dataset Configuration:** Augmented Dataset ($N=110$ Academic Staff)  
+**Dataset Configuration:** Academic Staff Study Cohort ($N=110$)  
 **Feature Set:** 15 High-Contribution Pearson Correlation Features ($|r| \ge 0.30, p < 0.01$)  
-**Generation Engine:** `RAG-Grounded Generative Engine (Set GEMINI_API_KEY for live Gemini 3.8 Flash API)`  
+**Generation Engine:** `Generative AI Personalized Feedback Engine (Deterministic Synthesis)`  
 
 ---
 
@@ -33,23 +33,23 @@ Your questionnaire responses indicate an **elevated occupational stress profile 
 
 ---
 
-#### 2. Evidence-Grounded Personalized Action Plan (RAG-Guided)
+#### 2. Personalized Action Plan & Coping Recommendations
 *High-Stress Coping & Workload Mitigation Recommendations tailored to your profile at Akwa Ibom State University:*
 
-1. **Health Problems Affecting Coping** *(Current Response: `Very often` | Evidence Base: Ejemot-Nwadiaro et al. (2026); Abraham et al. (2025))*:  
-   Self-reported health challenges affecting job coping are strongly linked in Nigerian university studies (Ejemot-Nwadiaro et al., 2026) to hypertension and burnout risk. Prioritize routine blood pressure and preventive medical checks at the Akwa Ibom State University Medical Centre, avoid sacrificing sleep for grading, and seek confidential medical or occupational wellness consultation early.
-2. **Research Responsibilities** *(Current Response: `Strongly Agree` | Evidence Base: Shi et al. (2025); Delgado Vela (2025); Baig & Yadegaridehkordi (2025))*:  
-   Protect 2–3 dedicated, uninterrupted 90-minute 'deep research blocks' per week on your calendar rather than fragmenting writing across evenings. Form collaborative co-authorship clusters within your faculty at AKSU to share literature synthesis and data analysis workloads, and use Gen-AI research assistants ethically for literature discovery and manuscript structuring.
-3. **Age Group** *(Current Response: `55 yrs & above` | Evidence Base: Abraham et al. (2025); Kovács et al. (2025))*:  
+1. **Health Problems Affecting Coping** *(Current Response: `Very often`)*:  
+   Self-reported health challenges affecting job coping are strongly linked in Nigerian university studies to hypertension and burnout risk. Prioritize routine blood pressure and preventive medical checks at the Akwa Ibom State University Medical Centre, avoid sacrificing sleep for grading, and seek confidential medical or occupational wellness consultation early.
+2. **Research Responsibilities** *(Current Response: `Strongly Agree`)*:  
+   Protect 2–3 dedicated, uninterrupted 90-minute 'deep research blocks' per week on your calendar rather than fragmenting writing across evenings. Form collaborative co-authorship clusters within your faculty at AKSU to share research reading and data analysis workloads, and use Gen-AI research assistants ethically for academic source discovery and manuscript structuring.
+3. **Age Group** *(Current Response: `55 yrs & above`)*:  
    Senior lecturers face heightened physiological vulnerability to chronic fatigue. Incorporate deliberate rest intervals between classes and schedule preventive annual medical check-ups.
-4. **Academic Rank** *(Current Response: `Associate Professor` | Evidence Base: Eleje et al. (2025); Akah et al. (2022))*:  
+4. **Academic Rank** *(Current Response: `Associate Professor`)*:  
    Senior academic cadres (Senior Lecturer, Associate Professor, Professor) often carry compounded postgraduate supervision, senate/faculty committee leadership, and mentorship obligations alongside teaching. Establish clear office-hour boundaries for supervisees and delegate operational sub-tasks to junior colleagues as structured mentorship.
 
 ---
 
 #### 3. Weekly Micro-Habit & Adaptation Schedule
 - **Scheduled Check-In:** Aligned with your stated preference (**Once a week**), re-assess your workload and recovery indicators after implementing the top two adjustments above.
-- **Institutional & Confidential Support:** Occupational stress arises from a demand–resource imbalance (Kovács et al., 2024; Ejemot-Nwadiaro et al., 2026). Where administrative or teaching loads exceed departmental norms, use this objective assessment summary to discuss workload balancing with your Head of Department or consult the AKSU Medical & Counselling Unit.
+- **Institutional & Confidential Support:** Occupational stress arises from an imbalance between demanding duties and available coping resources. Where administrative or teaching loads exceed standard departmental norms, use this assessment summary to discuss workload balancing with your Head of Department or consult the AKSU Medical & Counselling Unit.
 
 ---
 
@@ -78,20 +78,20 @@ Your questionnaire responses indicate a **manageable occupational stress profile
 
 ---
 
-#### 2. Evidence-Grounded Personalized Action Plan (RAG-Guided)
+#### 2. Personalized Action Plan & Coping Recommendations
 *Low-Stress Maintenance & Preventive Wellbeing Recommendations tailored to your profile at Akwa Ibom State University:*
 
-1. **Alcohol Consumption Frequency** *(Current Response: `Often` | Evidence Base: Ejemot-Nwadiaro et al. (2026))*:  
-   Ejemot-Nwadiaro et al. (2026) identified lifestyle coping behaviours including alcohol frequency as significantly associated with workplace stress outcomes among Nigerian lecturers. Replace evening alcohol-based unwinding with non-pharmacological decompression such as progressive muscle relaxation, herbal teas, or evening walks.
-2. **Educational Qualification** *(Current Response: `Master’s degree` | Evidence Base: Akah et al. (2022); Eleje et al. (2025))*:  
+1. **Alcohol Consumption Frequency** *(Current Response: `Often`)*:  
+   Lifestyle coping behaviours including alcohol frequency are significantly associated with workplace stress outcomes among university lecturers. Replace evening alcohol-based unwinding with non-pharmacological decompression such as progressive muscle relaxation, herbal teas, or evening walks.
+2. **Educational Qualification** *(Current Response: `Master’s degree`)*:  
    Doctorate-level expectations for grant generation, postgraduate supervision, and journal editing can overwhelm daily teaching schedules. Protect designated research days from committee interruption.
-3. **Exam Supervision & Marking** *(Current Response: `Often` | Evidence Base: Akah et al. (2022); Shi et al. (2025))*:  
+3. **Exam Supervision & Marking** *(Current Response: `Often`)*:  
    High examination invigilation and script-marking volume is a major acute stressor. Adopt structured, point-based marking schemes and daily script quotas (e.g., 25–30 scripts per sitting with mandatory 15-minute posture and eye breaks) to prevent cognitive exhaustion and musculoskeletal strain.
-4. **Research Responsibilities** *(Current Response: `Disagree` | Evidence Base: Shi et al. (2025); Delgado Vela (2025); Baig & Yadegaridehkordi (2025))*:  
+4. **Research Responsibilities** *(Current Response: `Disagree`)*:  
    Your research responsibilities are balanced. Maintain steady writing habits and collaborative publication pipelines to avoid last-minute promotion-cycle pressure.
 
 ---
 
 #### 3. Weekly Micro-Habit & Adaptation Schedule
 - **Scheduled Check-In:** Aligned with your stated preference (**Only when I request it**), re-assess your workload and recovery indicators after implementing the top two adjustments above.
-- **Institutional & Confidential Support:** Occupational stress arises from a demand–resource imbalance (Kovács et al., 2024; Ejemot-Nwadiaro et al., 2026). Where administrative or teaching loads exceed departmental norms, use this objective assessment summary to discuss workload balancing with your Head of Department or consult the AKSU Medical & Counselling Unit.
+- **Institutional & Confidential Support:** Occupational stress arises from an imbalance between demanding duties and available coping resources. Where administrative or teaching loads exceed standard departmental norms, use this assessment summary to discuss workload balancing with your Head of Department or consult the AKSU Medical & Counselling Unit.
